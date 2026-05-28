@@ -1,96 +1,124 @@
 """
 agents/drm_agents.py
 ─────────────────────
-Sub-agents owned by the Data Request Manager super agent.
+Data Request Manager sub-agents.
 
-Each agent:
-  - Has a focused system prompt describing exactly its role
-  - Gets only the tools it needs (principle of least privilege)
-  - Raises typed exceptions for known failure modes
+DataAnalystAgent uses the make_tools(state) factory so each tool
+has direct access to the pipeline state without globals.
 """
 
-from agents.base_agent import BaseAgent
-from tools.data_tools import (
-    fetch_data_from_source,
-    check_data_sufficiency,
-    fetch_activity_logs,
-    run_compliance_check,
-)
-from utils.exceptions import InsufficientDataError
+from strands import Agent
+from config.model_factory import get_model
+from tools.data_analyst.data_analyst_tools import make_tools
+from utils.state import PipelineState
+from utils.exceptions import InsufficientDataError, PipelineError
 from utils.logger import logger
 
+AGENT_NAME = "Data Analyst"
 
-class DataAnalystAgent(BaseAgent):
+DATA_ANALYST_SYSTEM_PROMPT = """
+You are the Data Analyst Agent for the ODD (Ongoing Due Diligence) Review Process.
+
+Your sole responsibility is to call tools in the exact sequence below to extract
+all required data for a party review. Do not reason about the data. Do not skip,
+reorder, or add steps. Call the next tool immediately after each success.
+
+═══════════════════════════════════════════════
+TOOL EXECUTION SEQUENCE
+═══════════════════════════════════════════════
+
+1. extract_party_id
+2. fetch_kyc_data
+3. fetch_svoc_data
+4. fetch_servicelink_data
+5. check_account_status
+6. extract_previous_residence
+7. save_analyst_output
+
+═══════════════════════════════════════════════
+RULES
+═══════════════════════════════════════════════
+
+- Always pass the bare numeric party ID to every tool. Never pass labels or prefixes.
+  Correct: "1000001" — Wrong: "party_id:1000001"
+- After each tool call, check the status before calling the next tool.
+- If any tool returns a failed status, stop immediately and report the error.
+- If check_account_status returns "not_applicable", stop immediately and return its result.
+- Do not call extract_documents. It is not part of this pipeline.
+- Do not narrate or explain between steps. Call the next tool immediately.
+- Your final response must be the output of save_analyst_output.
+"""
+
+
+class DataAnalystAgent:
     """
-    First in the DRM pipeline.
-    Fetches and evaluates data. Raises InsufficientDataError
-    if the data cannot support further processing — this is the
-    only early-exit point in the entire pipeline.
-    """
-
-    SYSTEM_PROMPT = """
-    You are a Data Analyst Agent.
-
-    Your responsibilities:
-    1. Use fetch_data_from_source to retrieve data relevant to the query.
-    2. Use check_data_sufficiency to evaluate whether the data is adequate.
-    3. If data is sufficient, return a structured summary of what you found.
-    4. If data is NOT sufficient, clearly state: "INSUFFICIENT DATA: <reason>"
-
-    Be concise and factual. Do not make assumptions about missing data.
-    """
-
-    TOOLS = [fetch_data_from_source, check_data_sufficiency]
-
-    def run(self, query: str) -> str:
-        result = super().run(query)
-
-        # Detect early-exit signal from the model's response
-        if result.strip().upper().startswith("INSUFFICIENT DATA"):
-            logger.warning(f"DataAnalystAgent | early exit triggered: {result}")
-            raise InsufficientDataError(result)
-
-        return result
-
-
-class ActivityMonitorAgent(BaseAgent):
-    """
-    Second in the DRM pipeline.
-    Receives the data analyst's output and monitors
-    activity patterns related to the request.
-    """
-
-    SYSTEM_PROMPT = """
-    You are an Activity Monitor Agent.
-
-    You receive a data summary from the Data Analyst.
-    Your responsibilities:
-    1. Use fetch_activity_logs to retrieve relevant activity records.
-    2. Identify any anomalies, trends, or patterns of concern.
-    3. Return a structured activity report.
-
-    Be specific about what activity you observed and any flags raised.
+    Data Analyst Agent — first in the DRM pipeline.
+    Orchestrates all data extraction steps for a party ODD review.
     """
 
-    TOOLS = [fetch_activity_logs]
+    def __init__(self):
+        self._model = get_model()
+
+    def run(self, state: PipelineState) -> PipelineState:
+        """
+        Runs the data analyst pipeline for the query in state.
+        Mutates state directly (tools write to state as they execute).
+        Returns the updated state.
+        Raises InsufficientDataError if data cannot support further pipeline stages.
+
+        NOTE: InsufficientDataError thrown inside a @tool is caught by Strands internally
+        and will NOT propagate out of agent(). Instead we check state.status after the
+        call — tools set this flag before raising so we always detect early exits.
+        """
+        logger.info(f"[{AGENT_NAME}] Starting for query: {state.query}")
+
+        # Attach an early-exit flag to state so tools can signal halts
+        # without relying on exception propagation through Strands
+        state._early_exit = False
+        state._early_exit_reason = None
+
+        tools = make_tools(state)
+
+        agent = Agent(
+            system_prompt=DATA_ANALYST_SYSTEM_PROMPT,
+            tools=tools,
+            model=self._model,
+        )
+
+        try:
+            result = agent(state.query)
+            logger.info(f"[{AGENT_NAME}] Completed. Steps: {state.steps_completed}")
+        except Exception as exc:
+            logger.error(f"[{AGENT_NAME}]] Unexpected error: {exc}")
+            raise PipelineError(f"DataAnalystAgent failed: {exc}") from exc
+
+        # Check state flags set by tools — this is how we detect early exits
+        if getattr(state, "_early_exit", False):
+            reason = getattr(state, "_early_exit_reason", "Insufficient data")
+            logger.warning("[{AGENT_NAME}] Early exit flagged: {reason}")
+            raise InsufficientDataError(reason)
+
+        if state.status in ("not_applicable", "insufficient_data"):
+            raise InsufficientDataError(
+                state.error_message or f"Pipeline halted at DataAnalystAgent: {state.status}"
+            )
+
+        return state
 
 
-class ComplianceAgent(BaseAgent):
-    """
-    Third in the DRM pipeline.
-    Receives combined data and activity output, runs compliance checks.
-    """
+class ActivityMonitorAgent:
+    """Stub — implement next using same make_tools pattern."""
 
-    SYSTEM_PROMPT = """
-    You are a Compliance Agent.
+    def run(self, state: PipelineState) -> PipelineState:
+        logger.info("[ActivityMonitor] Running (stub)")
+        state.mark_step("ActivityMonitorAgent")
+        return state
 
-    You receive a data and activity report.
-    Your responsibilities:
-    1. Use run_compliance_check to evaluate the data against compliance rules.
-    2. Identify any violations or risks.
-    3. Return a compliance status report with pass/fail per rule.
 
-    Be precise. Flag every violation, even minor ones.
-    """
+class ComplianceAgent:
+    """Stub — implement next using same make_tools pattern."""
 
-    TOOLS = [run_compliance_check]
+    def run(self, state: PipelineState) -> PipelineState:
+        logger.info("[Compliance] Running (stub)")
+        state.mark_step("ComplianceAgent")
+        return state

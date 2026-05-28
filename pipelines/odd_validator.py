@@ -2,40 +2,41 @@
 pipelines/odd_validator.py
 ───────────────────────────
 ODD Validator super agent.
-
-Orchestrates DataSummarizerAgent → VerifierAgent in sequence.
-Receives the full DRM output as input.
+Accepts PipelineState from DRM, passes the analyst summary into sub-agents.
 """
 
+import logging
 from agents.odd_agents import DataSummarizerAgent, VerifierAgent
-from utils.logger import logger
+from utils.state import PipelineState
 from utils.exceptions import ValidationError
+
+logger = logging.getLogger(__name__)
 
 
 class ODDValidator:
-    """
-    Super agent: ODD Validator
-    Summarises and verifies the DRM output.
-    """
 
     def __init__(self):
         self.summarizer = DataSummarizerAgent()
         self.verifier = VerifierAgent()
 
-    def run(self, drm_output: str) -> str:
-        """
-        Executes the ODD validation pipeline.
-        Returns the verified summary string.
-        Raises ValidationError if verification fails.
-        """
+    def run(self, state: PipelineState) -> PipelineState:
         logger.info("ODDValidator | pipeline start")
 
-        # Step 1 — Summarise the DRM output
-        summary = self.summarizer.run(drm_output)
+        # Pull the analyst summary out of state as a string for the sub-agents
+        if state.data_analyst_output and state.data_analyst_output.summary:
+            drm_summary = state.data_analyst_output.summary
+        else:
+            drm_summary = f"Data analyst completed for party_id: {state.party_id}"
 
-        # Step 2 — Verify the summary
-        verify_input = f"Summary to verify:\n\n{summary}"
-        verified = self.verifier.run(verify_input)
+        # Step 1 — Summarise
+        summarized = self.summarizer.run(drm_summary)
+
+        # Step 2 — Verify
+        verified = self.verifier.run(f"Summary to verify:\n\n{summarized}")
+
+        # Write back to state
+        if state.data_analyst_output:
+            state.data_analyst_output.summary = verified
 
         logger.info("ODDValidator | pipeline complete")
-        return verified
+        return state

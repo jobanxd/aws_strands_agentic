@@ -1,92 +1,77 @@
 """
 pipelines/orchestrator.py
 ──────────────────────────
-Top-level orchestrator. Entry point for every query.
-
-Responsibilities:
-  1. Receive the query
-  2. Run DataRequestManager
-  3. On success, run ODDValidator
-  4. On InsufficientDataError, stop and return early-exit response
-  5. On any other error, log and raise
-
-This is the ONLY file the application entry point (main.py) should import.
+Top-level orchestrator. Creates PipelineState, runs DRM then ODD.
 """
 
+import logging
 from pipelines.data_request_manager import DataRequestManager
 from pipelines.odd_validator import ODDValidator
+from utils.state import PipelineState
 from utils.exceptions import InsufficientDataError, ValidationError, PipelineError
-from utils.logger import logger
+from database.sqlite_manager import SQLiteDatabaseManager
+
+logger = logging.getLogger(__name__)
 
 
 class Orchestrator:
-    """
-    Top-level orchestrator agent.
-    Coordinates DataRequestManager and ODDValidator.
-    """
 
     def __init__(self):
         self.drm = DataRequestManager()
         self.odd = ODDValidator()
 
     def process(self, query: str) -> dict:
-        """
-        Processes a query through the full pipeline.
+        # Create state once — shared across the entire pipeline
+        state = PipelineState(
+            query=query,
+            db=SQLiteDatabaseManager(),
+        )
 
-        Returns a result dict:
-          {
-            "status":  "success" | "insufficient_data" | "validation_failed" | "error",
-            "output":  <str>,
-            "stopped_at": <str | None>   # which agent halted the pipeline
-          }
-        """
-        logger.info(f"Orchestrator | received query: {query[:80]}...")
+        logger.info("Orchestrator | received query: %s", query[:80])
 
-        # ── Stage 1: Data Request Manager ─────────────────────────────────
         try:
-            drm_output = self.drm.run(query)
-
+            state = self.drm.run(state)
         except InsufficientDataError as exc:
-            # Expected edge case — data analyst flagged insufficient data
-            logger.warning(f"Orchestrator | early exit at DataAnalystAgent: {exc}")
+            logger.warning("Orchestrator | early exit: %s", exc)
             return {
                 "status": "insufficient_data",
                 "output": str(exc),
-                "stopped_at": "DataAnalystAgent",
+                "stopped_at": state.stopped_at or "DataAnalystAgent",
+                "steps_completed": state.steps_completed,
             }
-
         except PipelineError as exc:
-            logger.error(f"Orchestrator | DRM pipeline error: {exc}")
+            logger.error("Orchestrator | DRM error: %s", exc)
             return {
                 "status": "error",
                 "output": str(exc),
                 "stopped_at": "DataRequestManager",
+                "steps_completed": state.steps_completed,
             }
 
-        # ── Stage 2: ODD Validator ────────────────────────────────────────
         try:
-            odd_output = self.odd.run(drm_output)
-
+            state = self.odd.run(state)
         except ValidationError as exc:
-            logger.error(f"Orchestrator | validation failed: {exc}")
+            logger.error("Orchestrator | validation failed: %s", exc)
             return {
                 "status": "validation_failed",
                 "output": str(exc),
                 "stopped_at": "VerifierAgent",
+                "steps_completed": state.steps_completed,
             }
-
         except PipelineError as exc:
-            logger.error(f"Orchestrator | ODD pipeline error: {exc}")
+            logger.error("Orchestrator | ODD error: %s", exc)
             return {
                 "status": "error",
                 "output": str(exc),
                 "stopped_at": "ODDValidator",
+                "steps_completed": state.steps_completed,
             }
 
-        # ── Done ──────────────────────────────────────────────────────────
+        state.status = "success"
         logger.info("Orchestrator | pipeline completed successfully")
         return {
             "status": "success",
-            "output": odd_output,
+            "output": state.data_analyst_output.summary if state.data_analyst_output else "Done",
             "stopped_at": None,
+            "steps_completed": state.steps_completed,
         }

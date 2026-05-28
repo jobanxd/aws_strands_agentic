@@ -2,54 +2,30 @@
 pipelines/data_request_manager.py
 ───────────────────────────────────
 Data Request Manager super agent.
-
-Orchestrates DataAnalystAgent → ActivityMonitorAgent → ComplianceAgent
-in a strict sequence using plain Python — not LLM routing.
-
-WHY PYTHON ORCHESTRATION (not LLM tool-calling for sequence)?
-  LLM-driven sequencing works but can be inconsistent with weaker local models.
-  Explicit Python sequencing is deterministic, easier to test, and easier to debug.
-  Use LLM routing only when the sequence genuinely needs to be dynamic.
+Sequences: DataAnalystAgent → ActivityMonitorAgent → ComplianceAgent.
+Passes PipelineState through each agent — no string concatenation.
 """
 
 from agents.drm_agents import DataAnalystAgent, ActivityMonitorAgent, ComplianceAgent
-from utils.logger import logger
+from utils.state import PipelineState
 from utils.exceptions import InsufficientDataError, PipelineError
+from utils.logger import logger
 
 
 class DataRequestManager:
-    """
-    Super agent: Data Request Manager
-    Runs sub-agents in order. Stops early if DataAnalystAgent
-    raises InsufficientDataError.
-    """
 
     def __init__(self):
         self.data_analyst = DataAnalystAgent()
         self.activity_monitor = ActivityMonitorAgent()
         self.compliance = ComplianceAgent()
 
-    def run(self, query: str) -> str:
-        """
-        Executes the DRM pipeline. Returns the compliance report string.
-        Raises InsufficientDataError to signal early exit to the orchestrator.
-        """
+    def run(self, state: PipelineState) -> PipelineState:
         logger.info("DataRequestManager | pipeline start")
 
-        # Step 1 — Data analyst (may raise InsufficientDataError)
-        analyst_output = self.data_analyst.run(query)
-
-        # Step 2 — Activity monitor receives analyst output
-        monitor_input = f"Original query: {query}\n\nData analysis: {analyst_output}"
-        monitor_output = self.activity_monitor.run(monitor_input)
-
-        # Step 3 — Compliance receives combined context
-        compliance_input = (
-            f"Original query: {query}\n\n"
-            f"Data analysis: {analyst_output}\n\n"
-            f"Activity report: {monitor_output}"
-        )
-        compliance_output = self.compliance.run(compliance_input)
+        # Step 1 — may raise InsufficientDataError (early exit signal)
+        state = self.data_analyst.run(state)
+        state = self.activity_monitor.run(state)
+        state = self.compliance.run(state)
 
         logger.info("DataRequestManager | pipeline complete")
-        return compliance_output
+        return state

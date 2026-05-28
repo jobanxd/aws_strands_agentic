@@ -22,7 +22,7 @@ def main():
     query = (
         sys.argv[1]
         if len(sys.argv) > 1
-        else "Analyse data request for entity ID 12345 and validate compliance."
+        else "Analyse data request for party id 1000001."
     )
 
     logger.info("=" * 60)
