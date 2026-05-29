@@ -48,27 +48,31 @@ class PipelineState:
     # Previous residence (edge case)
     previous_length_of_residence: Optional[str] = None
 
-    # Final structured output from DataAnalystAgent
-    data_analyst_output: Optional[DataAnalystOutput] = None
+    # Data Analyst Summary
+    data_analyst_summary: Optional[str] = None
 
     # ── Extracted by ActivityMonitorAgent ─────────────────────────────────────
+    # Active SVoC
     active_svoc_data: Optional[List[SvoCExtract]] = None
-    active_servicelink_bundles: Optional[List[ServiceLinkBundle]] = None
 
-    
-    account_summaries: Optional[List[Dict]] = None
-    all_anomalies: Optional[List[Dict]] = None
-    suspicious_activity_detected: bool = False
-    final_cash_percentage: float = 0.0
+    # Active ServiceLink
+    active_servicelink_bundles: Optional[List[ServiceLinkBundle]] = None
 
     # Employment Analysis
     employment_analysis_results: Optional[EmploymentAnalysisResults] = None
 
+    # Suspicious Activity Analysis
+    suspicious_activity_results: Optional[List[Dict]] = None
+    suspicious_activity_detected: bool = False
+
     # Country Risk Analysis
     country_risk_analysis: Optional[Dict[str, Any]] = None
 
+    # Final Cash %
+    final_cash_percentage: float = 0.0
 
-    activity_monitor_output: Optional[ActivityMonitorOutput] = None
+    # Activity Monitor Summary
+    activity_monitor_summary: Optional[str] = None
 
     # ── Pipeline control ──────────────────────────────────────────────────────
     status: str = "pending"

@@ -10,13 +10,8 @@ from typing import Dict
 from strands import Agent
 
 from src.core.model_factory import get_model
-from src.agents.state import PipelineState
-from src.models.agent_models import (
-    ActivityMonitorOutput,
-)
+from src.workflows.state import PipelineState
 from src.utils.logger import logger
-
-AGENT_NAME = "Activity Monitor"
 
 
 def make_tools(state: PipelineState) -> list:
@@ -24,7 +19,6 @@ def make_tools(state: PipelineState) -> list:
     Returns all Activity Monitor Agent tools bound to given pipeline state.
     """
 
-    # ── Step 1: Filter Active Accounts ───────────────────────────────────────
     @tool
     def filter_active_accounts(party_id: str) -> str:
         """
@@ -48,7 +42,7 @@ def make_tools(state: PipelineState) -> list:
         state.active_servicelink_bundles = active_bundles
         state.mark_step("filter_active_accounts")
 
-        logger.info(f"[{AGENT_NAME}] Active accounts: {len(open_svoc)}, Active bundles: {len(active_bundles)}")
+        logger.info(f"Active accounts: {len(open_svoc)}, Active bundles: {len(active_bundles)}")
         return json.dumps({
             "party_id": party_id,
             "open_accounts": len(open_svoc),
@@ -56,8 +50,6 @@ def make_tools(state: PipelineState) -> list:
             "status": "ok",
         })
 
-
-    # ── Step 2: Analyze Employment ────────────────────────────────────────────
     @tool
     def analyze_employment(party_id: str) -> str:
         """
@@ -116,9 +108,9 @@ def make_tools(state: PipelineState) -> list:
                         "employment_reason": result.get("employment_reason", ""),
                         "employment_recommendation": result.get("employment_recommendation", ""),
                     })
-                    logger.info(f"[{AGENT_NAME}] Employment analyzed for account: {bundle.transactions[0].account_no}")
+                    logger.info(f"Employment analyzed for account: {bundle.transactions[0].account_no}")
                 except (json.JSONDecodeError, Exception) as exc:
-                    logger.error(f"[{AGENT_NAME}] Employment analysis failed for bundle: {exc}")
+                    logger.error(f"Employment analysis failed for bundle: {exc}")
                     results.append({
                         "account_no": bundle.transactions[0].account_no if bundle.transactions else "Unknown",
                         "nsc": bundle.transactions[0].nsc if bundle.transactions else "Unknown",
@@ -134,18 +126,16 @@ def make_tools(state: PipelineState) -> list:
             state.employment_analysis_results = results
             state.mark_step("analyze_employment")
 
-            logger.info(f"[{AGENT_NAME}] Employment analysis complete: {len(results)} accounts")
+            logger.info(f"Employment analysis complete: {len(results)} accounts")
             return {"status": "ok", "accounts_analyzed": len(results)}
 
         try:
             result = asyncio.run(_analyze())
             return json.dumps(result, default=str)
         except Exception as exc:
-            logger.error(f"[{AGENT_NAME}] analyze_employment failed: {exc}")
+            logger.error(f"analyze_employment failed: {exc}")
             return json.dumps({"error": str(exc), "status": "failed"})
 
-
-    # ── Step 4: Analyze Country Risk ──────────────────────────────────────────
     @tool
     def analyze_country_risk(party_id: str) -> str:
         """
@@ -229,7 +219,7 @@ def make_tools(state: PipelineState) -> list:
             state.mark_step("analyze_country_risk")
 
             logger.info(
-                f"[{AGENT_NAME}] Country risk done — outside_safe: {result['transacted_outside_safe_countries']}, "
+                f"Country risk done — outside_safe: {result['transacted_outside_safe_countries']}, "
                 f"high_risk: {len(result['high_risk_countries'])}, "
                 f"very_high: {len(result['very_high_risk_countries'])}, "
                 f"prohibited: {len(result['prohibited_countries'])}"
@@ -240,11 +230,9 @@ def make_tools(state: PipelineState) -> list:
             result = asyncio.run(_analyze())
             return json.dumps(result, default=str)
         except Exception as exc:
-            logger.error(f"[{AGENT_NAME}] analyze_country_risk failed: {exc}")
+            logger.error(f"analyze_country_risk failed: {exc}")
             return json.dumps({"error": str(exc), "status": "failed"})
 
-
-    # ── Step 5: Analyze Suspicious Activity ───────────────────────────────────
     @tool
     def analyze_suspicious_activity(party_id: str) -> str:
         """
@@ -303,10 +291,10 @@ def make_tools(state: PipelineState) -> list:
                         "red_flags": red_flags,
                         "overall_assessment": result.get("overall_assessment", ""),
                     })
-                    logger.info(f"[{AGENT_NAME}] Suspicious activity analyzed for account: {account_no}")
+                    logger.info(f"Suspicious activity analyzed for account: {account_no}")
 
                 except (json.JSONDecodeError, Exception) as exc:
-                    logger.error(f"[{AGENT_NAME}] Suspicious activity analysis failed for {account_no}: {exc}")
+                    logger.error(f"Suspicious activity analysis failed for {account_no}: {exc}")
                     account_summaries.append({
                         "account_no": account_no,
                         "nsc": bundle.transactions[0].nsc,
@@ -317,13 +305,12 @@ def make_tools(state: PipelineState) -> list:
                     })
 
             # Save directly to state
-            state.account_summaries = account_summaries
-            state.all_anomalies = all_anomalies
+            state.suspicious_activity_results = account_summaries
             state.suspicious_activity_detected = suspicious_detected
             state.mark_step("analyze_suspicious_activity")
 
             logger.info(
-                f"[{AGENT_NAME}] Suspicious activity complete — "
+                f"Suspicious activity complete — "
                 f"detected: {suspicious_detected}, anomalies: {len(all_anomalies)}"
             )
             return {
@@ -337,11 +324,9 @@ def make_tools(state: PipelineState) -> list:
             result = asyncio.run(_analyze())
             return json.dumps(result, default=str)
         except Exception as exc:
-            logger.error(f"[{AGENT_NAME}] analyze_suspicious_activity failed: {exc}")
+            logger.error(f"analyze_suspicious_activity failed: {exc}")
             return json.dumps({"error": str(exc), "status": "failed"})
 
-
-    # ── Step 7: Calculate Cash Percentage ─────────────────────────────────────
     @tool
     def calculate_cash_percentage(party_id: str) -> str:
         """
@@ -357,48 +342,31 @@ def make_tools(state: PipelineState) -> list:
         state.final_cash_percentage = avg
         state.mark_step("calculate_cash_percentage")
 
-        logger.info(f"[{AGENT_NAME}] Cash percentage: {avg}%")
+        logger.info(f"Cash percentage: {avg}%")
         return json.dumps({"cash_percentage": avg, "status": "ok"})
 
-
-    # ── Step 8: Save Activity Monitor Output ──────────────────────────────────
     @tool
-    def save_activity_monitor_output(party_id: str) -> str:
+    def create_am_summary(party_id: str) -> str:
         """
-        Consolidate all activity monitor analysis into ActivityMonitorOutput
-        and save to pipeline state. Call this as the final step.
+        Create a human-readable summary of all activity monitor analysis for the party.
+        Must be called after all other tools have run.
         """
-        account_summaries = getattr(state, "account_summaries", [])
-        suspicious_detected = getattr(state, "suspicious_activity_detected", False)
-        all_anomalies = getattr(state, "all_anomalies", [])
-        country_risk = getattr(state, "country_risk_analysis", {})
-        cash_pct = getattr(state, "final_cash_percentage", 0)
-        employment = state.employment_analysis_results or []
+        summary_parts = []
 
-        output = ActivityMonitorOutput(
-            party_id=party_id,
-            account_summaries=account_summaries,
-            transaction_analysis={
-                "accounts_analyzed": len(account_summaries),
-                "suspicious_activity_detected": suspicious_detected,
-            },
-            employment_results=employment,
-            cash_percentage=cash_pct,
-            country_risk_analysis=country_risk,
-        )
+        if state.suspicious_activity_results:
+            suspicious_accounts = [a for a in state.suspicious_activity_results if a.get("suspicious_activity_detected")]
+            summary_parts.append(f"Analyzed {len(state.suspicious_activity_results)} accounts, with {len(suspicious_accounts)} showing suspicious activity.")
 
-        state.activity_monitor_output = output
-        state.mark_step("save_activity_monitor_output")
+        if state.employment_analysis_results:
+            employed = [e for e in state.employment_analysis_results if e.get("employment_status") == "employed"]
+            summary_parts.append(f"Employment analysis suggests {len(employed)} accounts are associated with employed individuals.")
 
-        logger.info(f"[{AGENT_NAME}] Output saved for party: {party_id}")
-        return json.dumps({
-            "status": "success",
-            "party_id": party_id,
-            "suspicious_activity_detected": suspicious_detected,
-            "anomalies_count": len(all_anomalies),
-            "steps_completed": state.steps_completed,
-        })
+        if state.country_risk_analysis and state.country_risk_analysis.get("transacted_outside_safe_countries"):
+            high_risk = state.country_risk_analysis.get("high_risk_countries", {})
+            vhr = state.country_risk_analysis.get("very_high_risk_countries", {})
+            summary_parts.append(f"Country risk analysis detected transactions involving {len(high_risk)} high-risk and {len(vhr)} very high-risk countries.")
 
+        return json.dumps({"summary": " ".join(summary_parts), "status": "ok"})
 
     return [
         filter_active_accounts,
@@ -406,5 +374,5 @@ def make_tools(state: PipelineState) -> list:
         analyze_country_risk,
         analyze_suspicious_activity,
         calculate_cash_percentage,
-        save_activity_monitor_output,
+        create_am_summary,
     ]

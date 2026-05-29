@@ -3,21 +3,20 @@
 from strands import Agent
 from src.core.model_factory import get_model
 
-from src.agents.state import PipelineState
+from src.workflows.state import PipelineState
 from src.utils.prompt_loader import get_prompt
 from src.utils.logger import logger
 
 AGENT_NAME = "Compliance Agent"
 SYSTEM_PROMPT = get_prompt(
-    category="system_prompts",
-    module_name="compliance_prompt",
+    agent="compliance_agent",
     prompt_name="COMPLIANCE_SYSTEM_PROMPT",
 )
 
 
 class ComplianceAgent:
     """
-    Activity Monitor Agent
+    Compliance Agent
         - Orchestrates all compliance checks before proceeding to ODD process
     """
 

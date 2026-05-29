@@ -4,10 +4,10 @@ Sequences: DataAnalystAgent → ActivityMonitorAgent → ComplianceAgent.
 Passes PipelineState through each agent.
 """
 
-from src.agents.data_analyst_agent import DataAnalystAgent
-from src.agents.activity_monitor_agent import ActivityMonitorAgent
-from src.agents.compliance_agent import ComplianceAgent
-from src.agents.state import PipelineState
+from src.agents.data_analyst_agent.agent import DataAnalystAgent
+from src.agents.activity_monitor_agent.agent import ActivityMonitorAgent
+from src.agents.compliance_agent.agent import ComplianceAgent
+from src.workflows.state import PipelineState
 from src.utils.logger import logger
 
 

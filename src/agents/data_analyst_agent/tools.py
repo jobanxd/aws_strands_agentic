@@ -8,11 +8,8 @@ import asyncio
 from strands import tool
 from typing import List
 
-from src.agents.state import PipelineState
-from src.models.agent_models import (
-    DataAnalystOutput,
-    ServiceLinkBundle,
-)
+from src.workflows.state import PipelineState
+from src.models.agent_models import ServiceLinkBundle
 from src.utils.exceptions import InsufficientDataError
 from src.utils.logger import logger
 
@@ -365,38 +362,27 @@ def make_tool(state: PipelineState) -> list:
             return json.dumps(asyncio.run(_extract()))
         except Exception as exc:
             logger.error(f"extract_previous_residence failed: {exc}")
-            return json.dumps({"error": str(exc), "status": "failed"})
-
+            return json.dumps({"error": str(exc), "status": "failed"})\
+    
     @tool
-    def save_analyst_output(party_id: str) -> str:
+    def create_da_summary(party_id: str) -> str:
         """
-        Consolidate all extracted data into a DataAnalystOutput and save it to state.
-        Call this as the final step after all extraction tools have run.
-        Returns a summary of everything extracted during this agent run.
+        Create a human-readable summary of all extracted data for the party.
+        Must be called after all other tools have run.
+        Returns the summary string.
         """
         if not state.latest_kyc_party_info:
-            return json.dumps({"error": "Cannot save: KYC data not loaded", "status": "failed"})
+            return json.dumps({"error": "Cannot create summary: KYC data not loaded", "status": "failed"})
 
-        # Build structured output
-        output = DataAnalystOutput(
-            party_id=state.party_id,
-            review_info=state.review_info,
-            textract_data=state.textract_data,
-            svoc_data=state.svoc_data or [],
-            servicelink_bundles=state.servicelink_bundles or [],
-            previous_length_of_residence=state.previous_length_of_residence,
-            summary=_build_summary(state),
-        )
+        summary = _build_summary(state)
+        state.data_analyst_summary = summary
+        state.mark_step("create_da_summary")
 
-        state.data_analyst_output = output
-        state.mark_step("save_analyst_output")
-
-        logger.info(f"Output saved for party: {party_id}")
+        logger.info(f"Summary created for party: {party_id}")
         return json.dumps({
-            "status": "success",
             "party_id": party_id,
-            "steps_completed": state.steps_completed,
-            "summary": output.summary,
+            "summary": summary,
+            "status": "ok",
         })
 
     return [
@@ -406,7 +392,7 @@ def make_tool(state: PipelineState) -> list:
         fetch_servicelink_data,
         check_account_status,
         extract_previous_residence,
-        save_analyst_output,
+        create_da_summary,
     ]
 
 

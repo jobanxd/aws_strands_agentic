@@ -11,7 +11,7 @@ Usage:
 import sys
 import json
 
-from src.agents.pipelines.orchestrator import Orchestrator
+from src.workflows.pipelines.orchestrator import Orchestrator
 from src.utils.logger import logger
 
 

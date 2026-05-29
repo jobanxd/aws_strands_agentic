@@ -4,9 +4,9 @@ Sequences: DataAnalystAgent → ActivityMonitorAgent → ComplianceAgent.
 Passes PipelineState through each agent.
 """
 
-from src.agents.data_summarizer_agent import DataSummarizerAgent
-from src.agents.verifier_agent import VerifierAgent
-from src.agents.state import PipelineState
+from src.agents.data_summarizer_agent.agent import DataSummarizerAgent
+from src.agents.verifier_agent.agent import VerifierAgent
+from src.workflows.state import PipelineState
 from src.utils.logger import logger
 
 

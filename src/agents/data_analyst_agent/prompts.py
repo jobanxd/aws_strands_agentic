@@ -15,7 +15,7 @@ TOOL EXECUTION SEQUENCE
 4. fetch_servicelink_data
 5. check_account_status
 6. extract_previous_residence
-7. save_analyst_output
+7. create_da_summary
 
 ═══════════════════════════════════════════════
 RULES
@@ -26,7 +26,5 @@ RULES
 - After each tool call, check the status before calling the next tool.
 - If any tool returns a failed status, stop immediately and report the error.
 - If check_account_status returns "not_applicable", stop immediately and return its result.
-- Do not call extract_documents. It is not part of this pipeline.
 - Do not narrate or explain between steps. Call the next tool immediately.
-- Your final response must be the output of save_analyst_output.
 """

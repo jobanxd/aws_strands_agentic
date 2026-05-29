@@ -1,6 +1,6 @@
 {
   "query": "Analyse data request for party id 1000001.",
-  "db": "<src.database.sqlite_manager.SQLiteDatabaseManager object at 0x7d1db79acfe0>",
+  "db": "<src.database.sqlite_manager.SQLiteDatabaseManager object at 0x10cdc78c0>",
   "party_id": "1000001",
   "kyc_party_info": [
     "entrp_party_ident='2000001' party_id='1000001' review_id='2025104' party_name='John Michael Connor' party_type='Person' current_review_type='Periodic/Trigger Review (Personal)' date_current_review_started=datetime.date(2025, 3, 1) current_review_step=None last_manual_risk='-' last_automated_risk='High'",
@@ -20,7 +20,7 @@
   ],
   "textract_data": null,
   "previous_length_of_residence": null,
-  "data_analyst_output": null,
+  "data_analyst_summary": "Data Analyst Extraction Summary for John Michael Connor (Party ID: 1000001)\n\nKYCnet Data Extracted\n  - Party ID: 1000001\n  - Latest Review ID: 2024103\n  - Last Automated Risk: High\n\nIdentity Document Analysis\n  - Document Type: N/A\n  - Name: N/A\n  - DOB: N/A\n  - Country of Birth: N/A\n\nEmployment Information\n  - Employment Status: N/A\n  - Employer: N/A\n\nSVoC Data Extracted\n  - Total Accounts Found: 2\n\nServiceLink Data Extracted\n  - Total Bundles: 2\n  - Accounts Processed: 3000101, 3000201\n\nPrevious Length of Residence: N/A\n\nSteps Completed: extract_party_id, fetch_kyc_data, fetch_svoc_data, fetch_servicelink_data, check_account_status, extract_previous_residence\nData extraction completed successfully.",
   "active_svoc_data": [
     "entrp_party_ident='2000001' agmt_id='3000101' nsc='901234.0' account_no='12345678.0' con_acct_num=None name='John Michael Connor' address='12 Oak Avenue, Tallaght, Dublin' dob=datetime.date(1985, 3, 14) postcode='D24 AB12' cash_percentage=0.05 turnover_selected=115000.0 source_system='BKKG' product='Personal Current Account' closed='N' closure_date=None gp_indicator='N'",
     "entrp_party_ident='2000001' agmt_id='3000201' nsc=None account_no=None con_acct_num='1.11122223333444e+15' name='John Michael Connor' address='12 Oak Avenue, Tallaght, Dublin' dob=datetime.date(1985, 3, 14) postcode='D24 AB12' cash_percentage=0.03 turnover_selected=None source_system='TSYS' product='Personal Credit Card' closed='N' closure_date=None gp_indicator='N'"
@@ -29,72 +29,13 @@
     "account_details=ServiceLinkAccountDetails(agmt_id='3000101', account_type='CURRENT ACCOUNT', account_name='MR JOHN MICHAEL CONNOR', account_address='12 OAK AVENUE, TALLAGHT, DUBLIN', post_code='D24 AB12', non_resident_code='REPUBLIC OF IRELAND') transactions=[ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 30), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=5100.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 30), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4750.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 28), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4700.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 22), src='M', tx_narrative='IP \u2013 Cash Desk Adjustment', debit_eur=None, credit_eur=500.0, tx_code='810', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 5), src='M', tx_narrative='IP \u2013 Fuel Station', debit_eur=120.0, credit_eur=None, tx_code='649', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 5), src='M', tx_narrative='IP \u2013 Grocery Retailer', debit_eur=180.0, credit_eur=None, tx_code='649', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 12), src='M', tx_narrative='IP \u2013 Branch Adjustment', debit_eur=None, credit_eur=1000.0, tx_code='260', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 1), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4500.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 18), src='M', tx_narrative='IP \u2013 ATM Correction', debit_eur=None, credit_eur=750.0, tx_code='265', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 15), src='M', tx_narrative='SP \u2013 Insurance Premium', debit_eur=315.0, credit_eur=None, tx_code='769', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 15), src='M', tx_narrative='SP \u2013 Internet Provider', debit_eur=95.0, credit_eur=None, tx_code='769', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 15), src='M', tx_narrative='SP \u2013 Electric Ireland', debit_eur=240.0, credit_eur=None, tx_code='769', country_of_origin=None)] transaction_codes=[ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 12), src='M', tx_narrative='IP \u2013 Branch Adjustment', debit_eur=None, credit_eur=1000.0, tx_code='260', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 18), src='M', tx_narrative='IP \u2013 ATM Correction', debit_eur=None, credit_eur=750.0, tx_code='265', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 5), src='M', tx_narrative='IP \u2013 Fuel Station', debit_eur=120.0, credit_eur=None, tx_code='649', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 5), src='M', tx_narrative='IP \u2013 Grocery Retailer', debit_eur=180.0, credit_eur=None, tx_code='649', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 15), src='M', tx_narrative='SP \u2013 Insurance Premium', debit_eur=315.0, credit_eur=None, tx_code='769', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 15), src='M', tx_narrative='SP \u2013 Internet Provider', debit_eur=95.0, credit_eur=None, tx_code='769', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 15), src='M', tx_narrative='SP \u2013 Electric Ireland', debit_eur=240.0, credit_eur=None, tx_code='769', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 22), src='M', tx_narrative='IP \u2013 Cash Desk Adjustment', debit_eur=None, credit_eur=500.0, tx_code='810', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 30), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=5100.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 30), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4750.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 28), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4700.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 1), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4500.0, tx_code='931', country_of_origin=None)]",
     "account_details=ServiceLinkAccountDetails(agmt_id='3000201', account_type='CREDIT CARD', account_name='MR JOHN MICHAEL CONNOR', account_address='12 OAK AVENUE, TALLAGHT, DUBLIN', post_code='D24 AB12', non_resident_code='REPUBLIC OF IRELAND') transactions=[] transaction_codes=[]"
   ],
-  "account_summaries": [
-    {
-      "account_no": "12345678",
-      "nsc": "901234",
-      "transaction_count": 12,
-      "suspicious_activity_detected": true,
-      "red_flags": [
-        {
-          "type": "Large Unexplained Credit",
-          "description": "A single credit of 4750 EUR on October 30, 2025 is significantly larger than the typical monthly recurring transaction amount (approximately 4500-5100 EUR) and lacks a clear narrative.",
-          "transaction_references": [
-            "Transaction ID: 2025-10-30"
-          ]
-        },
-        {
-          "type": "Sudden Outlier Transactions",
-          "description": "A single credit of 4700 EUR on December 28, 2025 is significantly larger than the typical monthly recurring transaction amount (approximately 4500-5100 EUR) and lacks a clear narrative.",
-          "transaction_references": [
-            "Transaction ID: 2025-12-28"
-          ]
-        },
-        {
-          "type": "Rapid Fund Movement",
-          "description": "A large credit of 4700 EUR on December 28, 2025 is followed by a quick transfer out of the same amount within one day. This rapid movement without explanation could be indicative of pass-through activity.",
-          "transaction_references": [
-            "Transaction ID: 2025-12-28",
-            "Transaction ID: 2025-12-29"
-          ]
-        }
-      ],
-      "overall_assessment": "The presence of multiple large, unexplained credits and a quick follow-up transfer suggest potential suspicious activity that needs further investigation."
-    }
-  ],
-  "all_anomalies": [
-    {
-      "type": "Large Unexplained Credit",
-      "description": "A single credit of 4750 EUR on October 30, 2025 is significantly larger than the typical monthly recurring transaction amount (approximately 4500-5100 EUR) and lacks a clear narrative.",
-      "transaction_references": [
-        "Transaction ID: 2025-10-30"
-      ]
-    },
-    {
-      "type": "Sudden Outlier Transactions",
-      "description": "A single credit of 4700 EUR on December 28, 2025 is significantly larger than the typical monthly recurring transaction amount (approximately 4500-5100 EUR) and lacks a clear narrative.",
-      "transaction_references": [
-        "Transaction ID: 2025-12-28"
-      ]
-    },
-    {
-      "type": "Rapid Fund Movement",
-      "description": "A large credit of 4700 EUR on December 28, 2025 is followed by a quick transfer out of the same amount within one day. This rapid movement without explanation could be indicative of pass-through activity.",
-      "transaction_references": [
-        "Transaction ID: 2025-12-28",
-        "Transaction ID: 2025-12-29"
-      ]
-    }
-  ],
-  "suspicious_activity_detected": true,
-  "final_cash_percentage": 4.0,
   "employment_analysis_results": [
     {
       "account_no": "12345678",
       "nsc": "901234",
       "employment_status": "Employee",
       "employment_status_reasoning": "",
-      "employer": "Online Platform Ltd",
+      "employer": "SP \u2013 Online Platform Ltd",
       "employer_reasoning": "",
       "employment_reason": null,
       "employment_recommendation": null
@@ -110,6 +51,17 @@
       "employment_recommendation": "Review transaction for this account"
     }
   ],
+  "suspicious_activity_results": [
+    {
+      "account_no": "12345678",
+      "nsc": "901234",
+      "transaction_count": 12,
+      "suspicious_activity_detected": false,
+      "red_flags": [],
+      "overall_assessment": "All transactions are consistent with recurring business activities including regular payments from online platforms, utility services, and minor adjustments. No large unexplained credits or anomalous patterns detected."
+    }
+  ],
+  "suspicious_activity_detected": false,
   "country_risk_analysis": {
     "transacted_outside_safe_countries": false,
     "high_risk_countries": {},
@@ -120,7 +72,8 @@
     "high_risk_total_percentage": 0,
     "very_high_risk_total_percentage": 0
   },
-  "activity_monitor_output": "party_id='1000001' account_summaries=[{'account_no': '12345678', 'nsc': '901234', 'transaction_count': 12, 'suspicious_activity_detected': True, 'red_flags': [{'type': 'Large Unexplained Credit', 'description': 'A single credit of 4750 EUR on October 30, 2025 is significantly larger than the typical monthly recurring transaction amount (approximately 4500-5100 EUR) and lacks a clear narrative.', 'transaction_references': ['Transaction ID: 2025-10-30']}, {'type': 'Sudden Outlier Transactions', 'description': 'A single credit of 4700 EUR on December 28, 2025 is significantly larger than the typical monthly recurring transaction amount (approximately 4500-5100 EUR) and lacks a clear narrative.', 'transaction_references': ['Transaction ID: 2025-12-28']}, {'type': 'Rapid Fund Movement', 'description': 'A large credit of 4700 EUR on December 28, 2025 is followed by a quick transfer out of the same amount within one day. This rapid movement without explanation could be indicative of pass-through activity.', 'transaction_references': ['Transaction ID: 2025-12-28', 'Transaction ID: 2025-12-29']}], 'overall_assessment': 'The presence of multiple large, unexplained credits and a quick follow-up transfer suggest potential suspicious activity that needs further investigation.'}] transaction_analysis={'accounts_analyzed': 1, 'suspicious_activity_detected': True} employment_results=[EmploymentAnalysisResults(employment_status='Employee', employment_status_reasoning='', employer='Online Platform Ltd', employer_reasoning='', employment_reason=None, employment_recommendation=None), EmploymentAnalysisResults(employment_status='Additional information required', employment_status_reasoning='No transaction history found', employer='Additional information required', employer_reasoning='No transaction history found', employment_reason='No transaction history found', employment_recommendation='Review transaction for this account')] cash_percentage=4.0 country_risk_analysis={'transacted_outside_safe_countries': False, 'high_risk_countries': {}, 'very_high_risk_countries': {}, 'prohibited_countries': {}, 'high_risk_countries_percentages': {}, 'very_high_risk_countries_percentages': {}, 'high_risk_total_percentage': 0, 'very_high_risk_total_percentage': 0}",
+  "final_cash_percentage": 4.0,
+  "activity_monitor_summary": null,
   "status": "pending",
   "stopped_at": null,
   "error_message": null,
@@ -128,15 +81,15 @@
     "extract_party_id",
     "fetch_kyc_data",
     "fetch_svoc_data",
-    "check_account_status",
     "fetch_servicelink_data",
+    "check_account_status",
     "extract_previous_residence",
+    "create_da_summary",
     "filter_active_accounts",
-    "analyze_country_risk",
     "analyze_employment",
+    "analyze_country_risk",
     "analyze_suspicious_activity",
-    "calculate_cash_percentage",
-    "save_activity_monitor_output"
+    "calculate_cash_percentage"
   ],
-  "started_at": "2026-05-29T06:01:08.983248"
+  "started_at": "2026-05-29T16:19:47.865597"
 }

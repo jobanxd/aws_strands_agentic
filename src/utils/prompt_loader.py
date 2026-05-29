@@ -1,20 +1,32 @@
-"""Load Agent Prompts (System/Tool Instruction)"""
+"""Prompt Loader Utils"""
 
 from importlib import import_module
 
 
-def get_prompt(category: str, module_name: str, prompt_name: str) -> str:
+def get_prompt(agent: str, prompt_name: str) -> str:
     """
     Example:
         get_prompt(
-            "system_prompts",
-            "data_analyst_prompt",
-            "DATA_ANALYST_SYSTEM_PROMPT",
+            "data_analyst_agent",
+            "SYSTEM_PROMPT",
         )
     """
 
-    module = import_module(
-        f"src.agents.prompts.{category}.{module_name}"
-    )
+    try:
+        module = import_module(
+            f"src.agents.{agent}.prompts"
+        )
 
-    return getattr(module, prompt_name)
+    except ModuleNotFoundError as exc:
+        raise ModuleNotFoundError(
+            f"Prompt module not found for agent: '{agent}'"
+        ) from exc
+
+    try:
+        return getattr(module, prompt_name)
+
+    except AttributeError as exc:
+        raise AttributeError(
+            f"Prompt '{prompt_name}' not found "
+            f"in {agent}.prompts"
+        ) from exc

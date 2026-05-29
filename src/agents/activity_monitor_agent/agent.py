@@ -1,29 +1,28 @@
-"""Data Analyst Agent Main Config"""
+"""Activity Monitor Agent Main Config"""
 
 import json
 
 from dataclasses import asdict
 from strands import Agent
-from src.core.model_factory import get_model
 
-from src.agents.state import PipelineState
-from src.agents.tools.data_analyst_tools import make_tool
+from src.core.model_factory import get_model
+from src.workflows.state import PipelineState
+from src.agents.activity_monitor_agent.tools import make_tools
 from src.utils.prompt_loader import get_prompt
-from src.utils.exceptions import InsufficientDataError, PipelineError
+from src.utils.exceptions import PipelineError
 from src.utils.logger import logger
 
-AGENT_NAME = "Data Analyst Agent"
+AGENT_NAME = "Activity Monitor Agent"
 SYSTEM_PROMPT = get_prompt(
-    category="system_prompts",
-    module_name="data_analyst_prompt",
-    prompt_name="DATA_ANALYST_SYSTEM_PROMPT",
+    agent="activity_monitor_agent",
+    prompt_name="ACTIVITY_MONITOR_SYSTEM_PROMPT",
 )
 
 
-class DataAnalystAgent:
+class ActivityMonitorAgent:
     """
-    Data Analyst Agent
-        - Orchestrates all data extraction steps for party ODD review.
+    Activity Monitor Agent
+        - Orchestrates all transaction history analysis
     """
 
     def __init__(self):
@@ -33,15 +32,14 @@ class DataAnalystAgent:
 
     def run(self, state: PipelineState) -> PipelineState:
         """
-        Runs the data analyst pipeline for the query in state.
+        Runs the activity monitor pipeline and continue the process in state.
         Mutates state directly (tools write to state as they execute).
         Returns the updated state.
-        Raises InsufficientDataError if data cannot support further pipeline stages.
         """
 
         logger.info(f"{AGENT_NAME} starting")
 
-        tools = make_tool(state)
+        tools = make_tools(state)
 
         agent = Agent(
             system_prompt=self.system_prompt,
@@ -51,17 +49,12 @@ class DataAnalystAgent:
 
         try:
             result = agent(state.query)
-            with open("state_dump_after_data_analyst.txt", "w", encoding="utf-8") as f:
+            with open("state_dump_after_activity_monitor.txt", "w", encoding="utf-8") as f:
                 json.dump(asdict(state), f, indent=2, default=str)
             logger.info(f"{AGENT_NAME} Completed. Result: {result}")
             logger.info(f"{AGENT_NAME} Completed. Steps: {state.steps_completed}")
         except Exception as exc:
             logger.error(f"Unexpected error: {exc}")
-            raise PipelineError(f"DataAnalystAgent failed: {exc}") from exc
-
-        if state.status in ("not_applicable", "insufficient_data"):
-            raise InsufficientDataError(
-                state.error_message or f"Pipeline halted at DataAnalystAgent: {state.status}"
-            )
+            raise PipelineError(f"ActivityMonitorAgent failed: {exc}") from exc
 
         return state

@@ -3,9 +3,9 @@ Orchestrator Pipeline. Top Level orchestrator.
 Creates Pipeline State, runs both DRM then ODD Pipelines
 """
 
-from src.agents.pipelines.data_request_manager import DataRequestManager
-from src.agents.pipelines.odd_validator import ODDValidator
-from src.agents.state import PipelineState
+from src.workflows.pipelines.data_request_manager import DataRequestManager
+from src.workflows.pipelines.odd_validator import ODDValidator
+from src.workflows.state import PipelineState
 from src.utils.exceptions import InsufficientDataError, ValidationError, PipelineError
 from src.database.sqlite_manager import SQLiteDatabaseManager
 from src.utils.logger import logger
@@ -68,7 +68,7 @@ class Orchestrator:
         logger.info("Orchestrator | pipeline completed successfully")
         return {
             "status": "success",
-            "output": state.data_analyst_output.summary if state.data_analyst_output else "Done",
+            "output": "Done",
             "stopped_at": None,
             "steps_completed": state.steps_completed,
         }
