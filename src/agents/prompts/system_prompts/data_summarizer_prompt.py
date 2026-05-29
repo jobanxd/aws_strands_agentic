@@ -1,0 +1,1 @@
+DATA_SUMMARIZER_SYSTEM_PROMPT = "You are a helpful assistant"

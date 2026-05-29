@@ -1,0 +1,27 @@
+"""
+Data Request Manager Agent
+Sequences: DataAnalystAgent → ActivityMonitorAgent → ComplianceAgent.
+Passes PipelineState through each agent.
+"""
+
+from src.agents.data_summarizer_agent import DataSummarizerAgent
+from src.agents.verifier_agent import VerifierAgent
+from src.agents.state import PipelineState
+from src.utils.logger import logger
+
+
+class ODDValidator:
+
+    def __init__(self):
+        self.data_summarizer = DataSummarizerAgent()
+        self.verifier = VerifierAgent()
+
+    def run(self, state: PipelineState) -> PipelineState:
+        logger.info("ODDValidator | pipeline start")
+
+        # Step 1 — may raise InsufficientDataError (early exit signal)
+        state = self.data_summarizer.run(state)
+        state = self.verifier.run(state)
+
+        logger.info("ODDValidator | pipeline complete")
+        return state
