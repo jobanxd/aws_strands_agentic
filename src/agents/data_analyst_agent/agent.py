@@ -10,7 +10,9 @@ from src.workflows.state import PipelineState
 from src.agents.data_analyst_agent.tools import make_tool
 from src.utils.prompt_loader import get_prompt
 from src.utils.exceptions import InsufficientDataError, PipelineError
-from src.utils.logger import logger
+from src.utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 AGENT_NAME = "Data Analyst Agent"
 SYSTEM_PROMPT = get_prompt(
@@ -49,10 +51,9 @@ class DataAnalystAgent:
         )
 
         try:
-            result = agent(state.query)
+            agent(state.query)
             with open("state_dump_after_data_analyst.txt", "w", encoding="utf-8") as f:
                 json.dump(asdict(state), f, indent=2, default=str)
-            logger.info(f"{AGENT_NAME} Completed. Result: {result}")
             logger.info(f"{AGENT_NAME} Completed. Steps: {state.steps_completed}")
         except Exception as exc:
             logger.error(f"Unexpected error: {exc}")

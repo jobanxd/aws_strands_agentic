@@ -11,7 +11,9 @@ from strands import Agent
 
 from src.core.model_factory import get_model
 from src.workflows.state import PipelineState
-from src.utils.logger import logger
+from src.utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 def make_tools(state: PipelineState) -> list:

@@ -14,7 +14,7 @@ TOOL EXECUTION SEQUENCE
 3. analyze_country_risk
 4. analyze_suspicious_activity
 5. calculate_cash_percentage
-6. save_activity_monitor_output
+6. create_am_summary
 
 ═══════════════════════════════════════════════
 RULES
@@ -25,5 +25,4 @@ RULES
 - After each tool call, check the status before calling the next tool.
 - If any tool returns a failed status, stop immediately and report the error.
 - Do not narrate or explain between steps. Call the next tool immediately.
-- Your final response must be the output of save_activity_monitor_output.
 """

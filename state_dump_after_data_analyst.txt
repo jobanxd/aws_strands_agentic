@@ -1,6 +1,6 @@
 {
-  "query": "Analyse data request for party id 1000001.",
-  "db": "<src.database.sqlite_manager.SQLiteDatabaseManager object at 0x10cdc7c80>",
+  "query": "1000001",
+  "db": "<src.database.sqlite_manager.SQLiteDatabaseManager object at 0x1118b3ef0>",
   "party_id": "1000001",
   "kyc_party_info": [
     "entrp_party_ident='2000001' party_id='1000001' review_id='2025104' party_name='John Michael Connor' party_type='Person' current_review_type='Periodic/Trigger Review (Personal)' date_current_review_started=datetime.date(2025, 3, 1) current_review_step=None last_manual_risk='-' last_automated_risk='High'",
@@ -41,5 +41,5 @@
     "extract_previous_residence",
     "create_da_summary"
   ],
-  "started_at": "2026-05-29T16:19:47.865597"
+  "started_at": "2026-05-30T03:47:39.599376"
 }

@@ -1,6 +1,6 @@
 {
-  "query": "Analyse data request for party id 1000001.",
-  "db": "<src.database.sqlite_manager.SQLiteDatabaseManager object at 0x10cdc78c0>",
+  "query": "1000001",
+  "db": "<src.database.sqlite_manager.SQLiteDatabaseManager object at 0x111854cb0>",
   "party_id": "1000001",
   "kyc_party_info": [
     "entrp_party_ident='2000001' party_id='1000001' review_id='2025104' party_name='John Michael Connor' party_type='Person' current_review_type='Periodic/Trigger Review (Personal)' date_current_review_started=datetime.date(2025, 3, 1) current_review_step=None last_manual_risk='-' last_automated_risk='High'",
@@ -35,7 +35,7 @@
       "nsc": "901234",
       "employment_status": "Employee",
       "employment_status_reasoning": "",
-      "employer": "SP \u2013 Online Platform Ltd",
+      "employer": "Online Platform Ltd",
       "employer_reasoning": "",
       "employment_reason": null,
       "employment_recommendation": null
@@ -56,12 +56,49 @@
       "account_no": "12345678",
       "nsc": "901234",
       "transaction_count": 12,
-      "suspicious_activity_detected": false,
-      "red_flags": [],
-      "overall_assessment": "All transactions are consistent with recurring business activities including regular payments from online platforms, utility services, and minor adjustments. No large unexplained credits or anomalous patterns detected."
+      "suspicious_activity_detected": true,
+      "red_flags": [
+        {
+          "type": "Large Unexplained Credit",
+          "description": "Credit of 5100.0 EUR on 2025-11-30, a significant amount for this account.",
+          "transaction_references": [
+            "2025-11-30"
+          ]
+        },
+        {
+          "type": "Sudden Outlier",
+          "description": "Credit of 4750.0 EUR on 2025-10-30, a significant amount for this account and a sudden outlier compared to previous transactions.",
+          "transaction_references": [
+            "2025-10-30"
+          ]
+        },
+        {
+          "type": "Sudden Outlier",
+          "description": "Credit of 4700.0 EUR on 2025-12-28, a significant amount for this account and a sudden outlier compared to previous transactions.",
+          "transaction_references": [
+            "2025-12-28"
+          ]
+        },
+        {
+          "type": "Sudden Outlier",
+          "description": "Credit of 1000.0 EUR on 2025-11-05, a significant amount for this account and a sudden outlier compared to previous transactions.",
+          "transaction_references": [
+            "2025-11-05"
+          ]
+        },
+        {
+          "type": "Rapid Movement",
+          "description": "Credit of 4700.0 EUR on 2025-12-28 followed by a transfer out of the same amount to an unknown recipient within the same day.",
+          "transaction_references": [
+            "2025-12-28",
+            "2025-12-29"
+          ]
+        }
+      ],
+      "overall_assessment": "The transaction history contains multiple large unexplained credits and a sudden outlier followed by rapid movement, which may indicate suspicious activity."
     }
   ],
-  "suspicious_activity_detected": false,
+  "suspicious_activity_detected": true,
   "country_risk_analysis": {
     "transacted_outside_safe_countries": false,
     "high_risk_countries": {},
@@ -91,5 +128,5 @@
     "analyze_suspicious_activity",
     "calculate_cash_percentage"
   ],
-  "started_at": "2026-05-29T16:19:47.865597"
+  "started_at": "2026-05-30T03:47:39.599376"
 }

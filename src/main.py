@@ -1,43 +1,8 @@
-"""
-main.py
-────────
-Application entry point. Run this file to start the agent system.
+from fastapi import FastAPI
+from src.utils.logger import setup_logging
+from src.api.routers.odd_router import router as odd_router
 
-Usage:
-  python main.py
-  python main.py "custom query here"
-"""
+setup_logging()
 
-import sys
-import json
-
-from src.workflows.pipelines.orchestrator import Orchestrator
-from src.utils.logger import logger
-
-
-def main():
-    query = (
-        sys.argv[1]
-        if len(sys.argv) > 1
-        else "Analyse data request for party id 1000001."
-    )
-
-    logger.info("=" * 60)
-    logger.info("Starting agent pipeline")
-    logger.info("=" * 60)
-
-    orchestrator = Orchestrator()
-    result = orchestrator.process(query)
-
-    print("\n" + "=" * 60)
-    print("PIPELINE RESULT")
-    print("=" * 60)
-    print(json.dumps(result, indent=2))
-
-    # Exit with non-zero code if pipeline did not succeed
-    if result["status"] != "success":
-        sys.exit(1)
-
-
-if __name__ == "__main__":
-    main()
+app = FastAPI(title="ODD Review API")
+app.include_router(odd_router)

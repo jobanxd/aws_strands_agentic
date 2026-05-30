@@ -7,7 +7,9 @@ Passes PipelineState through each agent.
 from src.agents.data_summarizer_agent.agent import DataSummarizerAgent
 from src.agents.verifier_agent.agent import VerifierAgent
 from src.workflows.state import PipelineState
-from src.utils.logger import logger
+from src.utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class ODDValidator:

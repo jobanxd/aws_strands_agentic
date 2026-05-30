@@ -11,7 +11,9 @@ from typing import List
 from src.workflows.state import PipelineState
 from src.models.agent_models import ServiceLinkBundle
 from src.utils.exceptions import InsufficientDataError
-from src.utils.logger import logger
+from src.utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 def make_tool(state: PipelineState) -> list:

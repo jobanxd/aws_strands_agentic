@@ -8,7 +8,9 @@ from src.workflows.pipelines.odd_validator import ODDValidator
 from src.workflows.state import PipelineState
 from src.utils.exceptions import InsufficientDataError, ValidationError, PipelineError
 from src.database.sqlite_manager import SQLiteDatabaseManager
-from src.utils.logger import logger
+from src.utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class Orchestrator:

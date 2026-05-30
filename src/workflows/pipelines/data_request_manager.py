@@ -8,7 +8,9 @@ from src.agents.data_analyst_agent.agent import DataAnalystAgent
 from src.agents.activity_monitor_agent.agent import ActivityMonitorAgent
 from src.agents.compliance_agent.agent import ComplianceAgent
 from src.workflows.state import PipelineState
-from src.utils.logger import logger
+from src.utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class DataRequestManager:
