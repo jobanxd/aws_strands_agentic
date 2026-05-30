@@ -4,19 +4,18 @@ import ast
 from datetime import date, datetime, timezone
 from typing import List, Literal, Optional, Union
 
-from app.models.data_models import (
+from src.models.data_models import (
     PartyInfo,
-    # ReviewInfo,
     ProofOfIDData,
     EmploymentData,
     ProofOfAddressData,
 )
-from app.models.agent_models import (
+from src.models.agent_models import (
     KYCQuestionAnswersWithEvidence,
     KYCnetFormDataWithEvidence,
     ComplianceCheckOutput,
 )
-from app.models.final_report_models import (
+from src.models.final_report_models import (
     LabelValueRow,
     LabelValueRowWithStatus,
     LabelValueRowReasonEvidence,

@@ -1,6 +1,6 @@
 {
   "query": "1000001",
-  "db": "<src.database.sqlite_manager.SQLiteDatabaseManager object at 0x111854cb0>",
+  "db": "<src.database.sqlite_manager.SQLiteDatabaseManager object at 0x10c760260>",
   "party_id": "1000001",
   "kyc_party_info": [
     "entrp_party_ident='2000001' party_id='1000001' review_id='2025104' party_name='John Michael Connor' party_type='Person' current_review_type='Periodic/Trigger Review (Personal)' date_current_review_started=datetime.date(2025, 3, 1) current_review_step=None last_manual_risk='-' last_automated_risk='High'",
@@ -20,7 +20,7 @@
   ],
   "textract_data": null,
   "previous_length_of_residence": null,
-  "data_analyst_summary": "Data Analyst Extraction Summary for John Michael Connor (Party ID: 1000001)\n\nKYCnet Data Extracted\n  - Party ID: 1000001\n  - Latest Review ID: 2024103\n  - Last Automated Risk: High\n\nIdentity Document Analysis\n  - Document Type: N/A\n  - Name: N/A\n  - DOB: N/A\n  - Country of Birth: N/A\n\nEmployment Information\n  - Employment Status: N/A\n  - Employer: N/A\n\nSVoC Data Extracted\n  - Total Accounts Found: 2\n\nServiceLink Data Extracted\n  - Total Bundles: 2\n  - Accounts Processed: 3000101, 3000201\n\nPrevious Length of Residence: N/A\n\nSteps Completed: extract_party_id, fetch_kyc_data, fetch_svoc_data, fetch_servicelink_data, check_account_status, extract_previous_residence\nData extraction completed successfully.",
+  "data_analyst_summary": "Data Analyst Extraction Summary for John Michael Connor (Party ID: 1000001)\n\nKYCnet Data Extracted\n  - Party ID: 1000001\n  - Latest Review ID: 2024103\n  - Last Automated Risk: High\n\nIdentity Document Analysis\n  - Document Type: N/A\n  - Name: N/A\n  - DOB: N/A\n  - Country of Birth: N/A\n\nEmployment Information\n  - Employment Status: N/A\n  - Employer: N/A\n\nSVoC Data Extracted\n  - Total Accounts Found: 2\n\nServiceLink Data Extracted\n  - Total Bundles: 2\n  - Accounts Processed: 3000101, 3000201\n\nPrevious Length of Residence: N/A\n\nSteps Completed: extract_party_id, fetch_kyc_data, fetch_svoc_data, check_account_status, fetch_servicelink_data, extract_previous_residence\nData extraction completed successfully.",
   "active_svoc_data": [
     "entrp_party_ident='2000001' agmt_id='3000101' nsc='901234.0' account_no='12345678.0' con_acct_num=None name='John Michael Connor' address='12 Oak Avenue, Tallaght, Dublin' dob=datetime.date(1985, 3, 14) postcode='D24 AB12' cash_percentage=0.05 turnover_selected=115000.0 source_system='BKKG' product='Personal Current Account' closed='N' closure_date=None gp_indicator='N'",
     "entrp_party_ident='2000001' agmt_id='3000201' nsc=None account_no=None con_acct_num='1.11122223333444e+15' name='John Michael Connor' address='12 Oak Avenue, Tallaght, Dublin' dob=datetime.date(1985, 3, 14) postcode='D24 AB12' cash_percentage=0.03 turnover_selected=None source_system='TSYS' product='Personal Credit Card' closed='N' closure_date=None gp_indicator='N'"
@@ -60,42 +60,15 @@
       "red_flags": [
         {
           "type": "Large Unexplained Credit",
-          "description": "Credit of 5100.0 EUR on 2025-11-30, a significant amount for this account.",
+          "description": "Three credits of 4750 EUR, 4700 EUR, and 4500 EUR to/from the same account number (12345678) over a short period with no apparent business purpose.",
           "transaction_references": [
-            "2025-11-30"
-          ]
-        },
-        {
-          "type": "Sudden Outlier",
-          "description": "Credit of 4750.0 EUR on 2025-10-30, a significant amount for this account and a sudden outlier compared to previous transactions.",
-          "transaction_references": [
-            "2025-10-30"
-          ]
-        },
-        {
-          "type": "Sudden Outlier",
-          "description": "Credit of 4700.0 EUR on 2025-12-28, a significant amount for this account and a sudden outlier compared to previous transactions.",
-          "transaction_references": [
-            "2025-12-28"
-          ]
-        },
-        {
-          "type": "Sudden Outlier",
-          "description": "Credit of 1000.0 EUR on 2025-11-05, a significant amount for this account and a sudden outlier compared to previous transactions.",
-          "transaction_references": [
-            "2025-11-05"
-          ]
-        },
-        {
-          "type": "Rapid Movement",
-          "description": "Credit of 4700.0 EUR on 2025-12-28 followed by a transfer out of the same amount to an unknown recipient within the same day.",
-          "transaction_references": [
+            "2025-10-30",
             "2025-12-28",
-            "2025-12-29"
+            "2025-10-12"
           ]
         }
       ],
-      "overall_assessment": "The transaction history contains multiple large unexplained credits and a sudden outlier followed by rapid movement, which may indicate suspicious activity."
+      "overall_assessment": "The frequent and large credits without clear business purposes are a significant anomaly and raise concerns about potential illicit activities."
     }
   ],
   "suspicious_activity_detected": true,
@@ -110,7 +83,20 @@
     "very_high_risk_total_percentage": 0
   },
   "final_cash_percentage": 4.0,
-  "activity_monitor_summary": null,
+  "activity_monitor_summary": "Analyzed 1 accounts, with 1 showing suspicious activity. Employment analysis suggests 0 accounts are associated with employed individuals.",
+  "identification_validation": null,
+  "employment_validation": null,
+  "proof_of_address_validation": null,
+  "data_completeness_check": null,
+  "compliance_summary": null,
+  "new_review_id": null,
+  "kyc_form_data": null,
+  "kyc_question_answers": null,
+  "fe_final_report": null,
+  "final_summary": null,
+  "data_summarizer_summary": null,
+  "verification_result": null,
+  "verifier_summary": null,
   "status": "pending",
   "stopped_at": null,
   "error_message": null,
@@ -118,15 +104,16 @@
     "extract_party_id",
     "fetch_kyc_data",
     "fetch_svoc_data",
-    "fetch_servicelink_data",
     "check_account_status",
+    "fetch_servicelink_data",
     "extract_previous_residence",
     "create_da_summary",
     "filter_active_accounts",
-    "analyze_employment",
     "analyze_country_risk",
+    "analyze_employment",
     "analyze_suspicious_activity",
+    "calculate_cash_percentage",
     "calculate_cash_percentage"
   ],
-  "started_at": "2026-05-30T03:47:39.599376"
+  "started_at": "2026-05-30T05:58:36.676770"
 }

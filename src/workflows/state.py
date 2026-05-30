@@ -11,10 +11,10 @@ from src.models.agent_models import (
     SvoCExtract,
     ServiceLinkBundle,
     TextractData,
-    DataAnalystOutput,
-
     EmploymentAnalysisResults,
-    ActivityMonitorOutput,
+    IdentificationValidationResults,
+    EmploymentValidationResults,
+    AddressValidationResults,
 )
 from src.database.sqlite_manager import SQLiteDatabaseManager
 
@@ -73,6 +73,25 @@ class PipelineState:
 
     # Activity Monitor Summary
     activity_monitor_summary: Optional[str] = None
+    
+    # ── Extracted by ComplianceAgent ──────────────────────────────────────────────
+    identification_validation: Optional[IdentificationValidationResults] = None
+    employment_validation: Optional[EmploymentValidationResults] = None
+    proof_of_address_validation: Optional[AddressValidationResults] = None
+    data_completeness_check: Optional[Dict[str, Any]] = None
+    compliance_summary: Optional[str] = None
+
+    # ── Extracted by DataSummarizerAgent ──────────────────────────────────────────
+    new_review_id: Optional[str] = None
+    kyc_form_data: Optional[Any] = None
+    kyc_question_answers: Optional[Any] = None
+    fe_final_report: Optional[Any] = None
+    final_summary: Optional[Dict] = None
+    data_summarizer_summary: Optional[str] = None
+
+    # ── Extracted by VerifierAgent ────────────────────────────────────────────────
+    verification_result: Optional[Dict[str, Any]] = None
+    verifier_summary: Optional[str] = None
 
     # ── Pipeline control ──────────────────────────────────────────────────────
     status: str = "pending"

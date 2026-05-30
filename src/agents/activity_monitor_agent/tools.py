@@ -367,6 +367,12 @@ def make_tools(state: PipelineState) -> list:
             high_risk = state.country_risk_analysis.get("high_risk_countries", {})
             vhr = state.country_risk_analysis.get("very_high_risk_countries", {})
             summary_parts.append(f"Country risk analysis detected transactions involving {len(high_risk)} high-risk and {len(vhr)} very high-risk countries.")
+        
+        final_summary = " ".join(summary_parts)
+
+        # Save to state
+        state.activity_monitor_summary = final_summary
+        state.mark_step("calculate_cash_percentage")
 
         return json.dumps({"summary": " ".join(summary_parts), "status": "ok"})
 
