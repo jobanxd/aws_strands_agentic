@@ -30,7 +30,7 @@ def get_model():
             model_id=settings.MODEL_ID,
         )
 
-    elif provider == "sigv4":                        # ← new
+    elif provider == "sigv4":
         from src.core.sigv4_model import SigV4Model
         return SigV4Model(
             model_id=settings.MODEL_ID,
@@ -41,5 +41,5 @@ def get_model():
     else:
         raise ValueError(
             f"Unknown MODEL_PROVIDER '{provider}'. "
-            "Choose: bedrock | ollama | litellm"
+            "Choose: bedrock | ollama | sigv4"
         )
