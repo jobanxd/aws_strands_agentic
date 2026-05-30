@@ -22,10 +22,11 @@ class Settings:
 
     # Ollama
     OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-
-    # LiteLLM
-    LITELLM_API_BASE: str = os.getenv("LITELLM_API_BASE", "http://localhost:1234/v1")
-    LITELLM_API_KEY: str = os.getenv("LITELLM_API_KEY", "not-needed")
+    
+    # SigV4 / AI Platform
+    AI_ROLE_ARN:    str = os.getenv("AI_ROLE_ARN", "")
+    AI_EXTERNAL_ID: str = os.getenv("AI_EXTERNAL_ID", "ai-pathfinder-kyc-test")
+    AI_INVOKE_URL:  str = os.getenv("AI_INVOKE_URL", "")
 
 
 settings = Settings()

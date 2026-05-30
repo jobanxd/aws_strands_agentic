@@ -1,5 +1,5 @@
 """
-config/model_factory.py
+core/model_factory.py
 ────────────────────────
 Returns the correct Strands model object based on MODEL_PROVIDER in .env.
 Add a new provider here without touching any agent code.
@@ -30,14 +30,12 @@ def get_model():
             model_id=settings.MODEL_ID,
         )
 
-    elif provider == "litellm":
-        from strands.models.litellm import LiteLLMModel
-        return LiteLLMModel(
+    elif provider == "sigv4":                        # ← new
+        from src.core.sigv4_model import SigV4Model
+        return SigV4Model(
             model_id=settings.MODEL_ID,
-            params={
-                "api_base": settings.LITELLM_API_BASE,
-                "api_key": settings.LITELLM_API_KEY,
-            },
+            invoke_url=settings.AI_INVOKE_URL,
+            region=settings.AWS_REGION,
         )
 
     else:
