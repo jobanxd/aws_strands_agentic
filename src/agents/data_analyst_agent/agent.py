@@ -59,9 +59,16 @@ class DataAnalystAgent:
             logger.error(f"Unexpected error: {exc}")
             raise PipelineError(f"DataAnalystAgent failed: {exc}") from exc
 
-        if state.status in ("not_applicable", "insufficient_data"):
+        # Check state flags set by tools — this is the only reliable way
+        # since Strands swallows all exceptions raised inside @tool functions
+        if state.status == "insufficient_data":
             raise InsufficientDataError(
-                state.error_message or f"Pipeline halted at DataAnalystAgent: {state.status}"
+                state.error_message or "Insufficient data to continue pipeline."
+            )
+
+        if state.status == "not_applicable":
+            raise InsufficientDataError(
+                state.error_message or "Review marked as Not Applicable."
             )
 
         return state

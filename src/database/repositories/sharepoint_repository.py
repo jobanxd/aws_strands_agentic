@@ -212,8 +212,8 @@ class SharePointRepository:
             UPDATE sharepoint_list
             SET review_status = ?
             WHERE party_id = ?
-              AND old_review_id = ?
-              AND (UPPER(review_status) != 'COMPLETED' OR review_status IS NULL)
+            AND old_review_id = ?
+            AND (UPPER(review_status) != 'COMPLETED' OR review_status IS NULL)
             """
             params = (status, party_id, review_id)
         else:
@@ -221,10 +221,12 @@ class SharePointRepository:
             UPDATE sharepoint_list
             SET review_status = ?
             WHERE party_id = ?
-              AND review_completion_date IS NULL
+            AND review_completion_date IS NULL
             """
             params = (status, party_id)
 
         async with self.get_connection() as conn:
-            result = await conn.execute(query, *params)
-            return True if result else False
+            cursor = await conn.execute(query, params)
+            await conn.commit()
+
+            return cursor.rowcount > 0

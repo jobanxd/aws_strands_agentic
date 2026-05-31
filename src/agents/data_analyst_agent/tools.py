@@ -10,7 +10,7 @@ from typing import List
 
 from src.workflows.state import PipelineState
 from src.models.agent_models import ServiceLinkBundle
-from src.utils.exceptions import InsufficientDataError
+from src.utils.exceptions import InsufficientDataError, ODDPreChecksError
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -195,24 +195,18 @@ def make_tool(state: PipelineState) -> list:
                         review_id=state.review_info.review_id,
                         status="Not Applicable",
                     )
+                reason = (
+                    f"All accounts are closed for party {party_id}. "
+                    "Review marked as Not Applicable."
+                )
+                # Set flag — DataAnalystAgent.run() checks this after agent() returns
+                state.status = "not_applicable"
+                state.error_message = reason
                 logger.warning(f"All accounts closed for party: {party_id}")
-                return {
-                    "has_active_account": False,
-                    "open_count": 0,
-                    "closed_count": len(closed),
-                    "closed_accounts": [
-                        {"account_no": s.account_no, "nsc": s.nsc} for s in closed
-                    ],
-                    "status": "not_applicable",
-                    "message": "All accounts are closed. Review marked as Not Applicable.",
-                }
+                return {"status": "not_applicable", "message": reason}
 
-            # Store in state
             state.mark_step("check_account_status")
-            logger.info(
-                f"Account status OK: {len(open_accounts)} open, {len(closed)} closed"
-            )
-
+            logger.info(f"Account status OK: {len(open_accounts)} open, {len(closed)} closed")
             return {
                 "has_active_account": True,
                 "open_count": len(open_accounts),

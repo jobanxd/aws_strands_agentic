@@ -16,6 +16,14 @@ class InsufficientDataError(Exception):
     pass
 
 
+class ODDPreChecksError(Exception):
+    """
+    Raised by DataAnalystAgent when the ODD Process should
+    continue.
+    """
+    pass
+
+
 class ValidationError(Exception):
     """
     Raised by VerifierAgent when the final output
