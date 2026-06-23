@@ -30,12 +30,11 @@ def get_model():
             model_id=settings.MODEL_ID,
         )
 
-    elif provider == "sigv4":
-        from src.core.sigv4_model import SigV4Model
-        return SigV4Model(
-            model_id=settings.MODEL_ID,
-            invoke_url=settings.AI_INVOKE_URL,
-            region=settings.AWS_REGION,
+    elif provider == "aiplatform":
+        from src.core.aiplatform_model import AIPlatformModel
+        return AIPlatformModel(
+            endpoint=settings.AI_PLATFORM_ENDPOINT,
+            tenant_id=settings.TENANT_ID,
         )
 
     else:

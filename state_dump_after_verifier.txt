@@ -1,40 +1,127 @@
 {
-  "query": "1000003",
-  "db": "<src.database.sqlite_manager.SQLiteDatabaseManager object at 0x108bd7ef0>",
-  "party_id": "1000003",
+  "query": "1000001",
+  "db": "<src.database.sqlite_manager.SQLiteDatabaseManager object at 0x74cba135a6f0>",
+  "party_id": "1000001",
   "kyc_party_info": [
-    "entrp_party_ident='2000003' party_id='1000003' review_id='2025303' party_name='David Michael Byrne' party_type='Person' current_review_type='Periodic/Trigger Review (Personal)' date_current_review_started=datetime.date(2025, 3, 15) current_review_step=None last_manual_risk='-' last_automated_risk='High'",
-    "entrp_party_ident='2000003' party_id='1000003' review_id='2024302' party_name='David Michael Byrne' party_type='Person' current_review_type='Periodic/Trigger Review (Personal)' date_current_review_started=datetime.date(2024, 6, 15) current_review_step=None last_manual_risk='-' last_automated_risk='High'",
-    "entrp_party_ident='2000003' party_id='1000003' review_id='2023301' party_name='David Michael Byrne' party_type='Person' current_review_type='Personal on boarding' date_current_review_started=datetime.date(2023, 9, 15) current_review_step=None last_manual_risk='-' last_automated_risk='High'"
+    "entrp_party_ident='2000001' party_id='1000001' review_id='2025104' party_name='John Michael Connor' party_type='Person' current_review_type='Periodic/Trigger Review (Personal)' date_current_review_started=datetime.date(2025, 3, 1) current_review_step=None last_manual_risk='-' last_automated_risk='High'",
+    "entrp_party_ident='2000001' party_id='1000001' review_id='2024103' party_name='John Michael Connor' party_type='Person' current_review_type='Periodic/Trigger Review (Personal)' date_current_review_started=datetime.date(2024, 6, 1) current_review_step=None last_manual_risk='-' last_automated_risk='High'",
+    "entrp_party_ident='2000001' party_id='1000001' review_id='2023102' party_name='John Michael Connor' party_type='Person' current_review_type='Periodic/Trigger Review (Personal)' date_current_review_started=datetime.date(2023, 9, 1) current_review_step=None last_manual_risk='-' last_automated_risk='High'",
+    "entrp_party_ident='2000001' party_id='1000001' review_id='2022101' party_name='John Michael Connor' party_type='Person' current_review_type='Personal on boarding' date_current_review_started=datetime.date(2022, 12, 1) current_review_step=None last_manual_risk='High' last_automated_risk='High'"
   ],
-  "latest_kyc_party_info": "entrp_party_ident='2000003' party_id='1000003' review_id='2024302' party_name='David Michael Byrne' party_type='Person' current_review_type='Periodic/Trigger Review (Personal)' date_current_review_started=datetime.date(2024, 6, 15) current_review_step=None last_manual_risk='-' last_automated_risk='High'",
-  "review_info": "entrp_party_ident='2000003' review_tag=None review_id='2024302' type_of_customer='Personal' business_units='Consumer Banking / Retail Consumer Products - PCA & Overdrafts' previous_review_risk_rating='High' title='Mr' full_name='David Michael Byrne' first_name='David' middle_name='Michael' last_name='Byrne' date_of_birth=datetime.date(1985, 2, 11) gender='Male' address_line_1='18 Brookfield Avenue' address_line_2='Tallaght' address_line_3=None post_code='D24 YF62' country_of_residence='Ireland' country_of_birth='Ireland' country_of_citizenship='Ireland' length_of_residence=None employment_status='Employee' occupation='Employed' employer_name='Client Consulting' account_type_product='Current Account' products_held='[\"CA-445566-99887766\"]' primary_account_identifier=None cash_income_percentage=None transacted_outside_safe_countries=None high_risk_countries_info=None very_high_risk_countries_info=None prohibited_countries_info=None source_funds_wealth_changed=None suspicious_activity_detected=None additional_information=None escalation_required=None",
+  "latest_kyc_party_info": "entrp_party_ident='2000001' party_id='1000001' review_id='2024103' party_name='John Michael Connor' party_type='Person' current_review_type='Periodic/Trigger Review (Personal)' date_current_review_started=datetime.date(2024, 6, 1) current_review_step=None last_manual_risk='-' last_automated_risk='High'",
+  "review_info": "entrp_party_ident='2000001' review_tag=None review_id='2024103' type_of_customer='Personal' business_units='Consumer Banking / Retail Consumer Products - PCA & Overdrafts' previous_review_risk_rating='High' title='Mr' full_name='John Michael Connor' first_name='John' middle_name='Michael' last_name='Connor' date_of_birth=datetime.date(1985, 3, 14) gender='Male' address_line_1='12 Oak Avenue' address_line_2='Tallaght' address_line_3=None post_code='D24 AB12' country_of_residence='Ireland' country_of_birth='Ireland' country_of_citizenship='Ireland' length_of_residence=None employment_status='Employee' occupation='Employed' employer_name='Online Platform Ltd.' account_type_product='Current Account' products_held='[\"CA-901234-12345678\"]' primary_account_identifier=None cash_income_percentage=None transacted_outside_safe_countries=None high_risk_countries_info=None very_high_risk_countries_info=None prohibited_countries_info=None source_funds_wealth_changed=None suspicious_activity_detected=None additional_information=None escalation_required=None",
   "svoc_data": [
-    "entrp_party_ident='2000003' agmt_id='3000103' nsc='445566.0' account_no='99887766.0' con_acct_num=None name='David Michael Byrne' address='18 Brookfield Avenue, Tallaght, Dublin' dob=datetime.date(1985, 2, 11) postcode='D24 YF62' cash_percentage=0.0 turnover_selected=92000.0 source_system='BKKG' product='Personal Current Account' closed='Y' closure_date=datetime.date(2025, 3, 31) gp_indicator='N'"
+    "entrp_party_ident='2000001' agmt_id='3000101' nsc='901234.0' account_no='12345678.0' con_acct_num=None name='John Michael Connor' address='12 Oak Avenue, Tallaght, Dublin' dob=datetime.date(1985, 3, 14) postcode='D24 AB12' cash_percentage=0.05 turnover_selected=115000.0 source_system='BKKG' product='Personal Current Account' closed='N' closure_date=None gp_indicator='N'",
+    "entrp_party_ident='2000001' agmt_id='3000201' nsc=None account_no=None con_acct_num='1.11122223333444e+15' name='John Michael Connor' address='12 Oak Avenue, Tallaght, Dublin' dob=datetime.date(1985, 3, 14) postcode='D24 AB12' cash_percentage=0.03 turnover_selected=None source_system='TSYS' product='Personal Credit Card' closed='N' closure_date=None gp_indicator='N'"
   ],
-  "servicelink_bundles": null,
+  "servicelink_bundles": [
+    "account_details=ServiceLinkAccountDetails(agmt_id='3000101', account_type='CURRENT ACCOUNT', account_name='MR JOHN MICHAEL CONNOR', account_address='12 OAK AVENUE, TALLAGHT, DUBLIN', post_code='D24 AB12', non_resident_code='REPUBLIC OF IRELAND') transactions=[ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 30), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=5100.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 30), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4750.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 28), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4700.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 22), src='M', tx_narrative='IP \u2013 Cash Desk Adjustment', debit_eur=None, credit_eur=500.0, tx_code='810', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 5), src='M', tx_narrative='IP \u2013 Fuel Station', debit_eur=120.0, credit_eur=None, tx_code='649', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 5), src='M', tx_narrative='IP \u2013 Grocery Retailer', debit_eur=180.0, credit_eur=None, tx_code='649', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 12), src='M', tx_narrative='IP \u2013 Branch Adjustment', debit_eur=None, credit_eur=1000.0, tx_code='260', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 1), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4500.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 18), src='M', tx_narrative='IP \u2013 ATM Correction', debit_eur=None, credit_eur=750.0, tx_code='265', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 15), src='M', tx_narrative='SP \u2013 Insurance Premium', debit_eur=315.0, credit_eur=None, tx_code='769', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 15), src='M', tx_narrative='SP \u2013 Internet Provider', debit_eur=95.0, credit_eur=None, tx_code='769', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 15), src='M', tx_narrative='SP \u2013 Electric Ireland', debit_eur=240.0, credit_eur=None, tx_code='769', country_of_origin=None)] transaction_codes=[ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 12), src='M', tx_narrative='IP \u2013 Branch Adjustment', debit_eur=None, credit_eur=1000.0, tx_code='260', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 18), src='M', tx_narrative='IP \u2013 ATM Correction', debit_eur=None, credit_eur=750.0, tx_code='265', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 5), src='M', tx_narrative='IP \u2013 Fuel Station', debit_eur=120.0, credit_eur=None, tx_code='649', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 5), src='M', tx_narrative='IP \u2013 Grocery Retailer', debit_eur=180.0, credit_eur=None, tx_code='649', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 15), src='M', tx_narrative='SP \u2013 Insurance Premium', debit_eur=315.0, credit_eur=None, tx_code='769', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 15), src='M', tx_narrative='SP \u2013 Internet Provider', debit_eur=95.0, credit_eur=None, tx_code='769', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 15), src='M', tx_narrative='SP \u2013 Electric Ireland', debit_eur=240.0, credit_eur=None, tx_code='769', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 22), src='M', tx_narrative='IP \u2013 Cash Desk Adjustment', debit_eur=None, credit_eur=500.0, tx_code='810', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 30), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=5100.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 30), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4750.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 28), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4700.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 1), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4500.0, tx_code='931', country_of_origin=None)]",
+    "account_details=ServiceLinkAccountDetails(agmt_id='3000201', account_type='CREDIT CARD', account_name='MR JOHN MICHAEL CONNOR', account_address='12 OAK AVENUE, TALLAGHT, DUBLIN', post_code='D24 AB12', non_resident_code='REPUBLIC OF IRELAND') transactions=[] transaction_codes=[]"
+  ],
   "textract_data": null,
   "previous_length_of_residence": null,
-  "data_analyst_summary": null,
-  "active_svoc_data": [],
-  "active_servicelink_bundles": [],
-  "employment_analysis_results": null,
-  "suspicious_activity_results": null,
-  "suspicious_activity_detected": false,
-  "country_risk_analysis": null,
-  "final_cash_percentage": 0.0,
-  "activity_monitor_summary": "",
+  "data_analyst_summary": "Data Analyst Extraction Summary for John Michael Connor (Party ID: 1000001)\n\nKYCnet Data Extracted\n  - Party ID: 1000001\n  - Latest Review ID: 2024103\n  - Last Automated Risk: High\n\nIdentity Document Analysis\n  - Document Type: N/A\n  - Name: N/A\n  - DOB: N/A\n  - Country of Birth: N/A\n\nEmployment Information\n  - Employment Status: N/A\n  - Employer: N/A\n\nSVoC Data Extracted\n  - Total Accounts Found: 2\n\nServiceLink Data Extracted\n  - Total Bundles: 2\n  - Accounts Processed: 3000101, 3000201\n\nPrevious Length of Residence: N/A\n\nSteps Completed: extract_party_id, fetch_kyc_data, fetch_svoc_data, check_account_status, fetch_servicelink_data, extract_previous_residence\nData extraction completed successfully.",
+  "active_svoc_data": [
+    "entrp_party_ident='2000001' agmt_id='3000101' nsc='901234.0' account_no='12345678.0' con_acct_num=None name='John Michael Connor' address='12 Oak Avenue, Tallaght, Dublin' dob=datetime.date(1985, 3, 14) postcode='D24 AB12' cash_percentage=0.05 turnover_selected=115000.0 source_system='BKKG' product='Personal Current Account' closed='N' closure_date=None gp_indicator='N'",
+    "entrp_party_ident='2000001' agmt_id='3000201' nsc=None account_no=None con_acct_num='1.11122223333444e+15' name='John Michael Connor' address='12 Oak Avenue, Tallaght, Dublin' dob=datetime.date(1985, 3, 14) postcode='D24 AB12' cash_percentage=0.03 turnover_selected=None source_system='TSYS' product='Personal Credit Card' closed='N' closure_date=None gp_indicator='N'"
+  ],
+  "active_servicelink_bundles": [
+    "account_details=ServiceLinkAccountDetails(agmt_id='3000101', account_type='CURRENT ACCOUNT', account_name='MR JOHN MICHAEL CONNOR', account_address='12 OAK AVENUE, TALLAGHT, DUBLIN', post_code='D24 AB12', non_resident_code='REPUBLIC OF IRELAND') transactions=[ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 30), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=5100.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 30), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4750.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 28), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4700.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 22), src='M', tx_narrative='IP \u2013 Cash Desk Adjustment', debit_eur=None, credit_eur=500.0, tx_code='810', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 5), src='M', tx_narrative='IP \u2013 Fuel Station', debit_eur=120.0, credit_eur=None, tx_code='649', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 5), src='M', tx_narrative='IP \u2013 Grocery Retailer', debit_eur=180.0, credit_eur=None, tx_code='649', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 12), src='M', tx_narrative='IP \u2013 Branch Adjustment', debit_eur=None, credit_eur=1000.0, tx_code='260', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 1), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4500.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 18), src='M', tx_narrative='IP \u2013 ATM Correction', debit_eur=None, credit_eur=750.0, tx_code='265', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 15), src='M', tx_narrative='SP \u2013 Insurance Premium', debit_eur=315.0, credit_eur=None, tx_code='769', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 15), src='M', tx_narrative='SP \u2013 Internet Provider', debit_eur=95.0, credit_eur=None, tx_code='769', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 15), src='M', tx_narrative='SP \u2013 Electric Ireland', debit_eur=240.0, credit_eur=None, tx_code='769', country_of_origin=None)] transaction_codes=[ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 12), src='M', tx_narrative='IP \u2013 Branch Adjustment', debit_eur=None, credit_eur=1000.0, tx_code='260', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 18), src='M', tx_narrative='IP \u2013 ATM Correction', debit_eur=None, credit_eur=750.0, tx_code='265', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 5), src='M', tx_narrative='IP \u2013 Fuel Station', debit_eur=120.0, credit_eur=None, tx_code='649', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 5), src='M', tx_narrative='IP \u2013 Grocery Retailer', debit_eur=180.0, credit_eur=None, tx_code='649', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 15), src='M', tx_narrative='SP \u2013 Insurance Premium', debit_eur=315.0, credit_eur=None, tx_code='769', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 15), src='M', tx_narrative='SP \u2013 Internet Provider', debit_eur=95.0, credit_eur=None, tx_code='769', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 15), src='M', tx_narrative='SP \u2013 Electric Ireland', debit_eur=240.0, credit_eur=None, tx_code='769', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 22), src='M', tx_narrative='IP \u2013 Cash Desk Adjustment', debit_eur=None, credit_eur=500.0, tx_code='810', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 11, 30), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=5100.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 30), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4750.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 12, 28), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4700.0, tx_code='931', country_of_origin=None), ServiceLinkTransaction(agmt_id='3000101', account_no='12345678', nsc='901234', transaction_date=datetime.date(2025, 10, 1), src='M', tx_narrative='SP \u2013 Online Platform Ltd', debit_eur=None, credit_eur=4500.0, tx_code='931', country_of_origin=None)]",
+    "account_details=ServiceLinkAccountDetails(agmt_id='3000201', account_type='CREDIT CARD', account_name='MR JOHN MICHAEL CONNOR', account_address='12 OAK AVENUE, TALLAGHT, DUBLIN', post_code='D24 AB12', non_resident_code='REPUBLIC OF IRELAND') transactions=[] transaction_codes=[]"
+  ],
+  "employment_analysis_results": [
+    {
+      "account_no": "12345678",
+      "nsc": "901234",
+      "employment_status": "Employee",
+      "employment_status_reasoning": "",
+      "employer": "Online Platform Ltd",
+      "employer_reasoning": "",
+      "employment_reason": null,
+      "employment_recommendation": null
+    },
+    {
+      "account_no": "Additional information required",
+      "nsc": "Additional information required",
+      "employment_status": "Additional information required",
+      "employment_status_reasoning": "No transaction history found",
+      "employer": "Additional information required",
+      "employer_reasoning": "No transaction history found",
+      "employment_reason": "No transaction history found",
+      "employment_recommendation": "Review transaction for this account"
+    }
+  ],
+  "suspicious_activity_results": [
+    {
+      "account_no": "12345678",
+      "nsc": "901234",
+      "transaction_count": 12,
+      "suspicious_activity_detected": true,
+      "red_flags": [
+        {
+          "type": "Large Unexplained Credit",
+          "description": "A single transaction with a credit of 5100.0 EUR on November 30, 2025 is significantly larger than other transactions from the same source (Online Platform Ltd) in recent months.",
+          "transaction_references": [
+            "2025-11-30"
+          ]
+        },
+        {
+          "type": "Sudden Outlier Transactions",
+          "description": "A single transaction on November 22, 2025 with a credit of 500.0 EUR from the source (IP - Cash Desk Adjustment) is significantly smaller than other transactions from this source but not as large as the 5100.0 EUR credit.",
+          "transaction_references": [
+            "2025-11-22"
+          ]
+        },
+        {
+          "type": "Rapid Movement",
+          "description": "A transaction on December 15, 2025 with a debit of 315.0 EUR from the source (SP - Insurance Premium) followed by a large credit of 4700.0 EUR to Online Platform Ltd within a week, indicating potential rapid movement of funds.",
+          "transaction_references": [
+            "2025-11-15",
+            "2025-12-15"
+          ]
+        }
+      ],
+      "overall_assessment": "The transaction history contains significant anomalies and outliers that deviate from the expected normal business activity, particularly with respect to large unexplained credits and rapid movement of funds. These elements warrant further investigation."
+    }
+  ],
+  "suspicious_activity_detected": true,
+  "country_risk_analysis": {
+    "transacted_outside_safe_countries": false,
+    "high_risk_countries": {},
+    "very_high_risk_countries": {},
+    "prohibited_countries": {},
+    "high_risk_countries_percentages": {},
+    "very_high_risk_countries_percentages": {},
+    "high_risk_total_percentage": 0,
+    "very_high_risk_total_percentage": 0
+  },
+  "final_cash_percentage": 4.0,
+  "activity_monitor_summary": "Analyzed 1 accounts, with 1 showing suspicious activity. Employment analysis suggests 0 accounts are associated with employed individuals.",
   "identification_validation": null,
   "employment_validation": null,
   "proof_of_address_validation": null,
-  "data_completeness_check": null,
+  "data_completeness_check": {
+    "is_complete": false,
+    "missing_fields": [
+      "party_info.party_id",
+      "party_info.party_name",
+      "review_info.full_name",
+      "review_info.date_of_birth",
+      "review_info.post_code",
+      "svoc_data[].account_no",
+      "svoc_data[].nsc",
+      "svoc_data[].cash_percentage",
+      "svoc_data[].turnover_selected"
+    ],
+    "reason": "The required fields 'party_id', 'party_name', 'full_name', 'date_of_birth', 'post_code', and corresponding data in 'account_no', 'nsc', 'cash_percentage', and 'turnover_selected' are missing or not provided."
+  },
   "compliance_summary": null,
-  "new_review_id": "2025303",
+  "new_review_id": "2025104",
   "kyc_form_data": null,
   "kyc_question_answers": null,
   "fe_final_report": null,
   "final_summary": null,
-  "data_summarizer_summary": "Data Summarizer Report for Party ID: 1000003\n\nNew Review ID: 2025303\n\nFinal KYC Form Summary:\nKYC Review completed.\n\nThe complete KYC form with evidence has been generated and is ready for submission to KYCnet.\nAll data has been validated and cross-referenced across multiple sources.",
+  "data_summarizer_summary": null,
   "verification_result": null,
   "verifier_summary": null,
   "status": "pending",
@@ -44,11 +131,20 @@
     "extract_party_id",
     "fetch_kyc_data",
     "fetch_svoc_data",
+    "check_account_status",
+    "fetch_servicelink_data",
+    "extract_previous_residence",
+    "create_da_summary",
     "filter_active_accounts",
+    "analyze_employment",
+    "analyze_country_risk",
+    "analyze_suspicious_activity",
     "calculate_cash_percentage",
-    "filter_active_accounts",
+    "calculate_cash_percentage",
+    "check_data_completeness",
+    "check_data_completeness",
     "generate_new_review_id",
-    "save_summarizer_summary"
+    "generate_new_review_id"
   ],
-  "started_at": "2026-05-31T11:56:37.535821"
+  "started_at": "2026-06-23T04:54:32.579603"
 }

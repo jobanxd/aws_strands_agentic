@@ -23,10 +23,14 @@ class Settings:
     # Ollama
     OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
     
-    # SigV4 / AI Platform
+    # SigV4
     AI_ROLE_ARN:    str = os.getenv("AI_ROLE_ARN", "")
     AI_EXTERNAL_ID: str = os.getenv("AI_EXTERNAL_ID", "ai-pathfinder-kyc-test")
     AI_INVOKE_URL:  str = os.getenv("AI_INVOKE_URL", "")
+
+    # AIPlatform
+    AI_PLATFORM_ENDPOINT: str = os.getenv("AI_PLATFORM_ENDPOINT", "")
+    TENANT_ID: str = os.getenv("TENANT_ID", "kyc")
 
 
 settings = Settings()
