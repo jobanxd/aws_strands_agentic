@@ -10,6 +10,7 @@ from typing import List
 
 from src.workflows.state import PipelineState
 from src.models.agent_models import ServiceLinkBundle
+from src.utils.textract_utils import TextractManager
 from src.utils.exceptions import InsufficientDataError, ODDPreChecksError
 from src.utils.logger import get_logger
 
@@ -231,8 +232,9 @@ def make_tool(state: PipelineState) -> list:
         async def _extract():
             if not state.latest_kyc_party_info:
                 return {"error": "KYC data not loaded. Run fetch_kyc_data first.", "status": "failed"}
+            textract_manager = TextractManager()
 
-            textract_data = await state.db.textract.extract_party_documents(
+            textract_data = await textract_manager.extract_party_documents(
                 party_id=party_id,
                 review_id=state.latest_kyc_party_info.review_id,
                 db=state.db,
@@ -264,6 +266,13 @@ def make_tool(state: PipelineState) -> list:
                 result["employment"] = {
                     "employment_status": textract_data.employment.employment_status,
                     "employer": textract_data.employment.employer,
+                }
+
+            if textract_data.proof_of_address:
+                result["proof_of_address"] = {
+                    "document_type": textract_data.proof_of_address.document_type,
+                    "full_name": textract_data.proof_of_address.full_name,
+                    "full_address": textract_data.proof_of_address.full_address,
                 }
 
             logger.info(f"Documents extracted for party: {party_id}")

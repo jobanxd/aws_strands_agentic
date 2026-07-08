@@ -5,3 +5,4 @@ fastapi
 ollama
 pip
 strands-agents-tools
+asyncpg
