@@ -13,6 +13,7 @@ from src.models.agent_models import (
 )
 from src.utils.report_generation_utils import ReportGenerationUtils
 from src.utils.logger import get_logger
+from src.utils.prompt_loader import get_prompt
 
 logger = get_logger(__name__)
 AGENT_NAME = "Data Summarizer"
@@ -61,7 +62,11 @@ def make_tools(state: PipelineState) -> list:
             if not state.data_analyst_summary or not state.activity_monitor_summary:
                 return {"error": "Agent outputs not in state.", "status": "failed"}
 
-            prompt_template = await state.db.agent.get_agent_prompt(12.0)
+            # prompt_template = await state.db.agent.get_agent_prompt(12.0)
+            prompt_template = get_prompt(
+                agent="data_summarizer_agent",
+                prompt_name="GENERATE_KYC_INFORMATION_PROMPT",
+            )
             if not prompt_template:
                 return {"error": "KYCnet Information prompt (12.0) not found.", "status": "failed"}
 
@@ -128,7 +133,11 @@ def make_tools(state: PipelineState) -> list:
             if not state.data_analyst_summary or not state.activity_monitor_summary:
                 return {"error": "Agent outputs not in state.", "status": "failed"}
 
-            prompt_template = await state.db.agent.get_agent_prompt(13.0)
+            # prompt_template = await state.db.agent.get_agent_prompt(13.0)
+            prompt_template = get_prompt(
+                agent="data_summarizer_agent",
+                prompt_name="GENERATE_KYC_QNA_PROMPT",
+            )
             if not prompt_template:
                 return {"error": "KYCnet Q&A prompt (13.0) not found.", "status": "failed"}
 
@@ -243,7 +252,11 @@ def make_tools(state: PipelineState) -> list:
             if not state.fe_final_report:
                 return {"error": "Final report not in state. Run generate_final_report first.", "status": "failed"}
 
-            prompt_template = await state.db.agent.get_agent_prompt(14.0)
+            # prompt_template = await state.db.agent.get_agent_prompt(14.0)
+            prompt_template = get_prompt(
+                agent="data_summarizer_agent",
+                prompt_name="GENERATE_OVERVIEW_SUMMARY_PROMPT",
+            )
             if not prompt_template:
                 return {"error": "Final summary prompt (14.0) not found.", "status": "failed"}
 

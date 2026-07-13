@@ -14,6 +14,7 @@ from src.models.agent_models import (
     AddressValidationResults,
 )
 from src.utils.logger import get_logger
+from src.utils.prompt_loader import get_prompt
 
 logger = get_logger(__name__)
 AGENT_NAME = "Compliance Agent"
@@ -46,7 +47,11 @@ def make_tools(state: PipelineState) -> list:
             # ── Identification ────────────────────────────────────────────────
             if state.textract_data.proof_of_id is not None:
                 logger.info(f"[{AGENT_NAME}] Validating identification document")
-                prompt_template = await state.db.agent.get_agent_prompt(8.0)
+                # prompt_template = await state.db.agent.get_agent_prompt(8.0)
+                prompt_template = get_prompt(
+                    agent="compliance_agent",
+                    prompt_name="VALIDATE_IDENTIFICATION_DOCUMENT_PROMPT",
+                )
                 if not prompt_template:
                     return {"error": "Identification validation prompt (8.0) not found.", "status": "failed"}
 
@@ -89,7 +94,11 @@ def make_tools(state: PipelineState) -> list:
             # ── Employment ────────────────────────────────────────────────────
             if state.textract_data.employment is not None:
                 logger.info(f"[{AGENT_NAME}] Validating employment document")
-                prompt_template = await state.db.agent.get_agent_prompt(9.0)
+                # prompt_template = await state.db.agent.get_agent_prompt(9.0)
+                prompt_template = get_prompt(
+                    agent="compliance_agent",
+                    prompt_name="VALIDATE_EMPLOYMENT_DOCUMENT_PROMPT",
+                )
                 if not prompt_template:
                     return {"error": "Employment validation prompt (9.0) not found.", "status": "failed"}
 
@@ -131,7 +140,11 @@ def make_tools(state: PipelineState) -> list:
             # ── Proof of Address ──────────────────────────────────────────────
             if state.textract_data.proof_of_address is not None:
                 logger.info(f"[{AGENT_NAME}] Validating proof of address")
-                prompt_template = await state.db.agent.get_agent_prompt(10.0)
+                # prompt_template = await state.db.agent.get_agent_prompt(10.0)
+                prompt_template = get_prompt(
+                    agent="compliance_agent",
+                    prompt_name="VALIDATE_ADDRESS_DOCUMENT",
+                )
                 if not prompt_template:
                     return {"error": "Proof of address prompt (10.0) not found.", "status": "failed"}
 
@@ -216,7 +229,11 @@ def make_tools(state: PipelineState) -> list:
             if not state.activity_monitor_summary:
                 return {"error": "ActivityMonitorOutput not in state.", "status": "failed"}
 
-            prompt_template = await state.db.agent.get_agent_prompt(11.0)
+            # prompt_template = await state.db.agent.get_agent_prompt(11.0)
+            prompt_template = get_prompt(
+                    agent="compliance_agent",
+                    prompt_name="COMPLETENESS_CHECK_PROMPT",
+                )
             if not prompt_template:
                 return {"error": "Data completeness prompt (11.0) not found.", "status": "failed"}
 

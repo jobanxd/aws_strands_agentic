@@ -7,6 +7,7 @@ from strands import tool
 from src.core.model_factory import get_model
 from src.workflows.state import PipelineState
 from src.utils.logger import get_logger
+from src.utils.prompt_loader import get_prompt
 
 logger = get_logger(__name__)
 AGENT_NAME = "Verifier Agent"
@@ -27,7 +28,11 @@ def make_tools(state: PipelineState) -> list:
             if not state.fe_final_report:
                 return {"error": "Final report not in state. DataSummarizer must run first.", "status": "failed"}
 
-            prompt_template = await state.db.agent.get_agent_prompt(15.0)
+            # prompt_template = await state.db.agent.get_agent_prompt(15.0)
+            prompt_template = get_prompt(
+                agent="verifier_agent",
+                prompt_name="VERIFY_COMPLETENESS_PROMPT",
+            )
             if not prompt_template:
                 return {"error": "Verify KYC form prompt (15.0) not found.", "status": "failed"}
 

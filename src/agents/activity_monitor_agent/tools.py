@@ -12,6 +12,7 @@ from strands import Agent
 from src.core.model_factory import get_model
 from src.workflows.state import PipelineState
 from src.utils.logger import get_logger
+from src.utils.prompt_loader import get_prompt
 
 logger = get_logger(__name__)
 
@@ -63,7 +64,11 @@ def make_tools(state: PipelineState) -> list:
             if not state.active_servicelink_bundles:
                 return {"error": "No active bundles. Run filter_active_accounts first.", "status": "failed"}
 
-            prompt_template = await state.db.agent.get_agent_prompt(6.0)
+            # prompt_template = await state.db.agent.get_agent_prompt(6.0)
+            prompt_template = get_prompt(
+                agent="activity_monitor_agent",
+                prompt_name="EMPLOYMENT_ANALYSIS_PROMPT"
+            )
             if not prompt_template:
                 return {"error": "Employment analysis prompt not found in database.", "status": "failed"}
 
@@ -246,7 +251,11 @@ def make_tools(state: PipelineState) -> list:
             if not state.active_servicelink_bundles:
                 return {"error": "No active bundles. Run filter_active_accounts first.", "status": "failed"}
 
-            prompt_template = await state.db.agent.get_agent_prompt(7.0)
+            # prompt_template = await state.db.agent.get_agent_prompt(7.0)
+            prompt_template = get_prompt(
+                agent="activity_monitor_agent",
+                prompt_name="SUSPICIOUS_ACTIVITY_ANALYSIS_PROMPT"
+            )
             if not prompt_template:
                 return {"error": "Suspicious activity prompt not found in database.", "status": "failed"}
 

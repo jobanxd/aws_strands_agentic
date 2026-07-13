@@ -31,6 +31,7 @@ from src.models.data_models import (
     ProofOfAddressData,
 )
 from src.models.agent_models import TextractData
+from src.utils.prompt_loader import get_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -44,10 +45,10 @@ class TextractManager:
     """Builds structured KYC data from pre-extracted Textract content in RDS."""
 
     _PROMPT_INDEX = {
-        "passport": 2.0,
-        "proof_of_id": 3.0,
-        "employment": 4.0,
-        "proof_of_address": 5.0,
+        "passport": "EXTRACT_PASSPORT_PROMPT", #2.0 
+        "proof_of_id": "EXTRACT_PROOF_OF_ID_PROMPT", #3.0,
+        "employment": "EXTRACT_EMPLOYMENT_PROMPT", #4.0,
+        "proof_of_address": "EXTRACT_PROOF_OF_ADDRESS_PROMPT", #5.0,
     }
     _MODEL_CLASS = {
         "passport": ProofOfIDData,
@@ -74,7 +75,11 @@ class TextractManager:
             logger.warning("No cached content for %s (party_id=%s)", document_type, party_id)
             return None
 
-        prompt_template = await db.agent.get_agent_prompt(self._PROMPT_INDEX[document_type])
+        # prompt_template = await db.agent.get_agent_prompt(self._PROMPT_INDEX[document_type])
+        prompt_template = get_prompt(
+            agent="data_analyst_agent",
+            prompt_name=self._PROMPT_INDEX[document_type],
+        )
         if not prompt_template:
             raise ValueError(f"Extract {document_type} data prompt not found in database")
 
