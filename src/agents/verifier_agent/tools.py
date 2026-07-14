@@ -36,9 +36,8 @@ def make_tools(state: PipelineState) -> list:
             if not prompt_template:
                 return {"error": "Verify KYC form prompt (15.0) not found.", "status": "failed"}
 
-            prompt = prompt_template.replace(
-                "{kyc_form_data}",
-                json.dumps(state.fe_final_report, indent=2, default=str)
+            prompt = prompt_template.format(
+                kyc_form_data=json.dumps(state.fe_final_report, indent=2, default=str)
             )
 
             agent = Agent(

@@ -16,7 +16,7 @@ from src.models.agent_models import (
     EmploymentValidationResults,
     AddressValidationResults,
 )
-from src.database.sqlite_manager import SQLiteDatabaseManager
+from src.database_rds.rds_postgres_manager import ODDDatabaseManagerPostgreSQL
 
 
 @dataclass
@@ -26,7 +26,7 @@ class PipelineState:
     """
     # ── Input ────────────────────────────────────────────────────────────────
     query: str
-    db: SQLiteDatabaseManager = field(default_factory=SQLiteDatabaseManager)
+    db: ODDDatabaseManagerPostgreSQL = field(default_factory=ODDDatabaseManagerPostgreSQL)
 
     # ── Extracted by DataAnalystAgent ─────────────────────────────────────────
     party_id: Optional[str] = None

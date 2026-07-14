@@ -7,7 +7,7 @@ from src.workflows.pipelines.data_request_manager import DataRequestManager
 from src.workflows.pipelines.odd_validator import ODDValidator
 from src.workflows.state import PipelineState
 from src.utils.exceptions import InsufficientDataError, ValidationError, PipelineError
-from src.database.sqlite_manager import SQLiteDatabaseManager
+from src.database_rds.rds_postgres_manager import ODDDatabaseManagerPostgreSQL
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -23,7 +23,7 @@ class Orchestrator:
         # Create state once — shared across the entire pipeline
         state = PipelineState(
             query=query,
-            db=SQLiteDatabaseManager(),
+            db=ODDDatabaseManagerPostgreSQL(),
         )
 
         logger.info("Orchestrator | received query: %s", query[:80])

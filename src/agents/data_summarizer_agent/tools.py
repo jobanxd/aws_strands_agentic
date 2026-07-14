@@ -90,8 +90,10 @@ def make_tools(state: PipelineState) -> list:
                 "proof_address_validation": state.proof_of_address_validation.model_dump() if state.proof_of_address_validation else None,
             }
 
-            prompt = prompt_template.replace("{input_data}", json.dumps(payload, indent=2, default=str))
-            prompt = prompt.replace("{agent_summaries}", _build_summaries_context(state))
+            prompt = prompt_template.format(
+                agent_summaries=_build_summaries_context(state),
+                input_data=json.dumps(payload, indent=2, default=str),
+            )
 
             agent = Agent(
                 system_prompt="""You are a KYC form generation specialist.
@@ -162,8 +164,10 @@ def make_tools(state: PipelineState) -> list:
                 "proof_address_validation": state.proof_of_address_validation.model_dump() if state.proof_of_address_validation else None,
             }
 
-            prompt = prompt_template.replace("{input_data}", json.dumps(payload, indent=2, default=str))
-            prompt = prompt.replace("{agent_summaries}", _build_summaries_context(state))
+            prompt = prompt_template.format(
+                agent_summaries=_build_summaries_context(state),
+                input_data=json.dumps(payload, indent=2, default=str),
+            )
 
             agent = Agent(
                 system_prompt="""You are a KYC form generation specialist.
@@ -267,10 +271,9 @@ def make_tools(state: PipelineState) -> list:
                 "address_validation_results": state.proof_of_address_validation.model_dump() if state.proof_of_address_validation else None,
             }
 
-            prompt = (
-                prompt_template
-                .replace("{final_report}", json.dumps(state.fe_final_report, indent=2, default=str))
-                .replace("{validation_report}", json.dumps(validation_report, indent=2, default=str))
+            prompt = prompt_template.format(
+                final_report=json.dumps(state.fe_final_report, indent=2, default=str),
+                validation_report=json.dumps(validation_report, indent=2, default=str),
             )
 
             agent = Agent(

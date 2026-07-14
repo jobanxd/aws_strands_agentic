@@ -39,7 +39,7 @@ The data you receive has three sections:
 2. **kycnet.questions.cards[].rows[]** — KYC question answers
 3. **llm_based_responses.items[]** — AI-generated answers (each has "question", "answer", "reason")
 
-Each row in sections 1 and 2 looks like: `{ "label": "Field Name", "value": "some value" }`
+Each row in sections 1 and 2 looks like: `{{ "label": "Field Name", "value": "some value" }}`
 
 A field is considered **present** if:
 - You can find a row where `label` matches the field name
@@ -117,11 +117,11 @@ If either "answer" or "reason" is missing/empty for any of these, add that quest
 
 Return ONLY valid JSON — no markdown, no code blocks, no extra text:
 
-{
+{{
   "is_validated": true | false,
   "missing_fields": [],
   "reason": "explanation"
-}
+}}
 
 - If nothing is missing: set `is_validated` to `true` and `missing_fields` to `[]`, reason: "All required fields are complete and ready for UI presentation"
 - If anything is missing: set `is_validated` to `false`, list the missing field names in `missing_fields`, reason: "Missing X required field(s): [list field names]"

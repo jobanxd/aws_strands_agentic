@@ -13,7 +13,7 @@ connection management.
 
 import logging
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Union
 import asyncpg
 
 from src.models.agent_models import (
@@ -232,12 +232,12 @@ class FinalReportRepository:
             )
             return False
 
-    def _parse_modified_at(self, modified_at: Optional[str]):
+    def _parse_modified_at(self, modified_at: Optional[Union[str, datetime]]) -> Optional[datetime]:
         """Parse modified_at into a datetime object when needed."""
         if modified_at is None:
             return None
         if isinstance(modified_at, str):
-            return datetime.fromisoformat(modified_at.replace("Z", "+00:00"))
+            return datetime.fromisoformat(modified_at)
         return modified_at
 
     def _build_final_report_update_query(

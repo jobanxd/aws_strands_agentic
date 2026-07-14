@@ -374,42 +374,44 @@ When referencing data sources in the "reason" field:
 
 ## OUTPUT FORMAT
 Return a JSON object with ONLY the kyc_form_data section:
-{
-  "kyc_form_data": {
-    "type_of_customer": {
+## OUTPUT FORMAT
+Return a JSON object with ONLY the kyc_form_data section:
+{{
+  "kyc_form_data": {{
+    "type_of_customer": {{
       "answer": "<value>",
       "status": "<Verified|Mismatch|Unverified|Pending|null>",
       "reason": "<explanation of status>",
       "evidence": "<specific data sources and values used>"
-    },
-    "account_product": { ... },
-    "previous_review_risk_rating": { ... },
-    "title": { ... },
-    "full_name": { ... },
-    "first_name": { ... },
-    "middle_name": { ... },
-    "last_name": { ... },
-    "dob": { ... },
-    "gender": { ... },
-    "address": { ... },
-    "address_line_1": { ... },
-    "address_line_2": { ... },
-    "address_line_3": { ... },
-    "post_code": { ... },
-    "country_of_residence": { ... },
-    "country_of_birth": { ... },
-    "country_of_citizenship": { ... },
-    "length_of_residence": { ... },
-    "employment_status": { ... },
-    "occupation": { ... },
-    "employer_name": { ... },
-    "account_type_product": { ... },
-    "products_held": { ... },
-    "primary_account_identifier": { ... },
-    "proof_of_true_name_verification": { ... },
-    "proof_of_address_verification": { ... }
-  }
-}
+    }},
+    "account_product": {{ ... }},
+    "previous_review_risk_rating": {{ ... }},
+    "title": {{ ... }},
+    "full_name": {{ ... }},
+    "first_name": {{ ... }},
+    "middle_name": {{ ... }},
+    "last_name": {{ ... }},
+    "dob": {{ ... }},
+    "gender": {{ ... }},
+    "address": {{ ... }},
+    "address_line_1": {{ ... }},
+    "address_line_2": {{ ... }},
+    "address_line_3": {{ ... }},
+    "post_code": {{ ... }},
+    "country_of_residence": {{ ... }},
+    "country_of_birth": {{ ... }},
+    "country_of_citizenship": {{ ... }},
+    "length_of_residence": {{ ... }},
+    "employment_status": {{ ... }},
+    "occupation": {{ ... }},
+    "employer_name": {{ ... }},
+    "account_type_product": {{ ... }},
+    "products_held": {{ ... }},
+    "primary_account_identifier": {{ ... }},
+    "proof_of_true_name_verification": {{ ... }},
+    "proof_of_address_verification": {{ ... }}
+  }}
+}}
 
 ## VERIFICATION GUIDELINES
 - "Verified": Data is consistent across sources — no concerns
@@ -517,14 +519,14 @@ All fields in this section have status set to null. No verification is required.
 
 **3. high_risk_countries_info**
 - Logic: Only answer if transacted_outside_safe_countries == true
-  - Answer: { "breakdown": high_risk_countries_percentages (country → percentage), "total": high_risk_total_percentage }
+  - Answer: {{ "breakdown": high_risk_countries_percentages (country → percentage), "total": high_risk_total_percentage }}
   - If `high_risk_countries` is empty → answer null
 - Data Source: Activity Monitor output → `high_risk_countries_percentages`, `high_risk_total_percentage`
 - Verification: Set to null if transacted_outside_safe_countries == false
 
 **4. very_high_risk_countries_info**
 - Logic: Only answer if transacted_outside_safe_countries == true
-  - Answer: { "breakdown": very_high_risk_countries_percentages (country → percentage), "total": very_high_risk_total_percentage }
+  - Answer: {{ "breakdown": very_high_risk_countries_percentages (country → percentage), "total": very_high_risk_total_percentage }}
   - If `very_high_risk_countries` is empty → answer null
 - Data Source: Activity Monitor output → `very_high_risk_countries_percentages`, `very_high_risk_total_percentage`
 - Verification: Set to null if transacted_outside_safe_countries == false
@@ -532,7 +534,7 @@ All fields in this section have status set to null. No verification is required.
 **5. prohibited_countries_info**
 - Logic: Only answer if transacted_outside_safe_countries == true
   - Note: No percentage breakdown or total is available for prohibited countries — answer only lists the countries involved
-  - Answer: { "countries": [list of keys from `prohibited_countries`] }
+  - Answer: {{ "countries": [list of keys from `prohibited_countries`] }}
   - If `prohibited_countries` is empty → answer null
 - Data Source: Activity Monitor output → `prohibited_countries`
 - Verification: Set to null if transacted_outside_safe_countries == false
@@ -603,24 +605,24 @@ When referencing data sources in the "reason" field:
 
 ## OUTPUT FORMAT
 Return a JSON object with ONLY the kyc_question_answers section:
-{
-  "kyc_question_answers": {
-    "cash_income_percentage": {
+{{
+  "kyc_question_answers": {{
+    "cash_income_percentage": {{
       "answer": "<0%-29% | 30%-49% | 50%-100% | No data found>",
       "status": null,
       "reason": "<explanation>",
       "evidence": "<calculation and sources>"
-    },
-    "transacted_outside_safe_countries": { ... },
-    "high_risk_countries_info": { ... },
-    "very_high_risk_countries_info": { ... },
-    "prohibited_countries_info": { ... },
-    "source_funds_wealth_changed": { ... },
-    "suspicious_activity_detected": { ... },
-    "additional_information": { ... },
-    "escalation_required": { ... }
-  }
-}
+    }},
+    "transacted_outside_safe_countries": {{ ... }},
+    "high_risk_countries_info": {{ ... }},
+    "very_high_risk_countries_info": {{ ... }},
+    "prohibited_countries_info": {{ ... }},
+    "source_funds_wealth_changed": {{ ... }},
+    "suspicious_activity_detected": {{ ... }},
+    "additional_information": {{ ... }},
+    "escalation_required": {{ ... }}
+  }}
+}}
 
 ## REASON FIELD WRITING GUIDELINES
 The "reason" field is displayed to end users. Follow these rules:
@@ -719,7 +721,7 @@ Input (summary):
 - Review indicates no suspicious activity or escalation
 
 Output:
-{
+{{
   "bullets": [
     "Customer identity information is consistent across available sources with no discrepancies identified.",
     "Required identification and supporting documentation have been provided and successfully validated.",
@@ -727,7 +729,7 @@ Output:
     "Review findings do not indicate changes to stated source of funds or any suspicious or escalatory concerns."
   ],
   "next_steps": ["Need for Human Review"]
-}
+}}
 
 ——————————————————————
 
@@ -740,7 +742,7 @@ Input (summary):
 - No suspicious activity identified
 
 Output:
-{
+{{
   "bullets": [
     "Customer identity information appears generally consistent across available sources.",
     "Mandatory identification documentation is incomplete, with required documents missing.",
@@ -750,7 +752,7 @@ Output:
     "Request valid government-issued identification",
     "Complete document verification checks"
   ]
-}
+}}
 
 ——————————————————————
 
@@ -764,7 +766,7 @@ Input (summary):
 - Source of funds requires further validation
 
 Output:
-{
+{{
   "bullets": [
     "Customer identity information is consistent across available sources with no discrepancies identified.",
     "Identification and supporting documentation have been provided and validated.",
@@ -775,7 +777,7 @@ Output:
     "Conduct ODD/EDD review",
     "Refresh source of funds and source of wealth documentation"
   ]
-}
+}}
 
 ——————————————————————
 
@@ -793,7 +795,7 @@ Input (summary):
 - No suspicious activity identified
 
 Output:
-{
+{{
   "bullets": [
     "Customer identity information is present across available sources; however, a date of birth discrepancy was identified between the identification document and the KYCnet system record.",
     "Proof of address documentation has been provided and successfully validated.",
@@ -804,7 +806,7 @@ Output:
     "Please review the Passport document. Mismatched fields: date of birth. The date of birth recorded on the document differs from the KYCnet system record.",
     "Please review the Certificate of Employment document. Mismatched fields: employer name. The employer stated on the document conflicts with the employer derived from transaction analysis."
   ]
-}
+}}
 
 ——————————————————————
 
@@ -818,7 +820,7 @@ Input (summary):
 - Documents provided and matched
 
 Output:
-{
+{{
   "bullets": [
     "Customer identity information is consistent across available sources with no discrepancies identified.",
     "Required identification and supporting documentation have been provided and successfully validated.",
@@ -826,7 +828,7 @@ Output:
     "Review findings do not indicate changes to stated source of funds or any suspicious or escalatory concerns."
   ],
   "next_steps": ["Need for Human Review"]
-}
+}}
 
 ——————————————————————
 
