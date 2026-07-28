@@ -82,9 +82,7 @@ INCOMING_PREFIX = "incoming/"
 #   lambda_function.py
 #   textract_mapping.xlsx
 # so no S3 fetch is needed to load it.
-TEXTRACT_MAPPING_PATH = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "textract_mapping.xlsx"
-)
+TEXTRACT_MAPPING_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "textract_mapping.xlsx")
 
 
 ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".pdf", ".txt"}
@@ -118,12 +116,12 @@ def get_connection(connect_timeout: int = 10):
     """
     try:
         conn = psycopg2.connect(
-            host="r-dcoe-aikycdev-rds-postgresql-tf-dev-cluster.cluster-ct4o4gwekssh.eu-west-1.rds.amazonaws.com",
+            host ='r-dcoe-aikycdev-rds-postgresql-tf-dev-cluster.cluster-ct4o4gwekssh.eu-west-1.rds.amazonaws.com',
             port=5432,
-            dbname="aikyc",
-            user="aikyc",
-            password="XZulm&yh(DY>9Kg+",
-            sslmode="require",
+            dbname='aikyc',
+            user='aikyc',
+            password='XZulm&yh(DY>9Kg+',
+            sslmode='require',
         )
     except Exception as exc:  # noqa: BLE001
         raise SecretFetchError(f"Failed to connect to RDS: {exc}") from exc
@@ -230,9 +228,7 @@ def _log_discrepancies(batch_identifier: str, discrepancies: list[dict]) -> None
                         ),
                     )
         logger.warning(
-            "Logged %d discrepancy(ies) for batch %s",
-            len(discrepancies),
-            batch_identifier,
+            "Logged %d discrepancy(ies) for batch %s", len(discrepancies), batch_identifier
         )
     finally:
         conn.close()
@@ -280,21 +276,16 @@ def _load_variant_map(force_reload: bool = False) -> dict[str, str]:
         for doc_type in DOCUMENT_TYPES:
             variant_map.setdefault(doc_type, doc_type)
 
-        logger.info(
-            "Loaded %d suffix variants from %s", len(variant_map), TEXTRACT_MAPPING_PATH
-        )
+        logger.info("Loaded %d suffix variants from %s", len(variant_map), TEXTRACT_MAPPING_PATH)
 
     except FileNotFoundError:
         logger.exception(
-            "Mapping file not found at %s, falling back to defaults",
-            TEXTRACT_MAPPING_PATH,
+            "Mapping file not found at %s, falling back to defaults", TEXTRACT_MAPPING_PATH
         )
         variant_map = {doc_type: doc_type for doc_type in DOCUMENT_TYPES}
 
     except (KeyError, IndexError, TypeError, ValueError):
-        logger.exception(
-            "Failed to parse %s, falling back to defaults", TEXTRACT_MAPPING_PATH
-        )
+        logger.exception("Failed to parse %s, falling back to defaults", TEXTRACT_MAPPING_PATH)
         variant_map = {doc_type: doc_type for doc_type in DOCUMENT_TYPES}
 
     _variant_map_cache = variant_map
@@ -339,8 +330,7 @@ def _parse_filename(file_name: str) -> Optional[dict]:
     match = FILENAME_RE.match(name)
     if not match:
         logger.warning(
-            "Filename %s does not match <party_id>_<review_id>_<suffix> pattern",
-            file_name,
+            "Filename %s does not match <party_id>_<review_id>_<suffix> pattern", file_name
         )
         return None
 
@@ -368,9 +358,7 @@ def _parse_filename(file_name: str) -> Optional[dict]:
 # ---------------------------------------------------------------------------
 # Textract extraction - same behavior/format as TextractManager.textract_file
 # ---------------------------------------------------------------------------
-def _extract_lines(
-    bucket: str, file_key: str, file_type: str
-) -> list[tuple[str, float]]:
+def _extract_lines(bucket: str, file_key: str, file_type: str) -> list[tuple[str, float]]:
     """Return a list of (text, confidence) tuples for a document in S3."""
     if file_type == "txt":
         obj = s3_client.get_object(Bucket=bucket, Key=file_key)
@@ -394,14 +382,10 @@ def _extract_lines(
 
         lines: list[tuple[str, float]] = []
         for page_num, page in enumerate(doc):
-            logger.info(
-                "Extracting page %d/%d from %s", page_num + 1, doc.page_count, file_key
-            )
+            logger.info("Extracting page %d/%d from %s", page_num + 1, doc.page_count, file_key)
             pix = page.get_pixmap(dpi=200)
             img_bytes = pix.tobytes("png")
-            response = textract_client.detect_document_text(
-                Document={"Bytes": img_bytes}
-            )
+            response = textract_client.detect_document_text(Document={"Bytes": img_bytes})
             lines.extend(
                 (block["Text"], block.get("Confidence", 0.0))
                 for block in response["Blocks"]
@@ -417,9 +401,7 @@ def _format_content(lines: list[tuple[str, float]]) -> tuple[str, Optional[float
     if not lines:
         return "", None
 
-    formatted = "\n".join(
-        f'Line: "{text}" | Confidence: {conf:.1f}%' for text, conf in lines
-    )
+    formatted = "\n".join(f'Line: "{text}" | Confidence: {conf:.1f}%' for text, conf in lines)
     avg_conf = round(sum(conf for _, conf in lines) / len(lines), 2)
     return formatted, avg_conf
 
@@ -500,7 +482,6 @@ def _load_control_file(bucket: str, key: str) -> Optional[dict]:
 # ---------------------------------------------------------------------------
 BATCH_FOLDER_PATTERN = re.compile(r"^BATCH_\d{8}_\d{3}/")
 
-
 def _list_incoming_files(bucket: str, prefix: str, control_key: str) -> list[dict]:
     """List every ingestible document under incoming/, skipping the control
     file itself and any ignored/unsupported/unparseable files. Each entry is
@@ -515,7 +496,7 @@ def _list_incoming_files(bucket: str, prefix: str, control_key: str) -> list[dic
         for obj in page.get("Contents", []):
             key = obj["Key"]
             all_seen_keys.append(key)
-            relative_key = key[len(prefix) :]
+            relative_key = key[len(prefix):]
 
             if BATCH_FOLDER_PATTERN.match(relative_key):
                 continue
@@ -543,12 +524,7 @@ def _list_incoming_files(bucket: str, prefix: str, control_key: str) -> list[dic
             parsed["file_key"] = key
             parsed_files.append(parsed)
 
-    logger.info(
-        "Total raw objects under %s = %d -> %s",
-        prefix,
-        len(all_seen_keys),
-        all_seen_keys,
-    )
+    logger.info("Total raw objects under %s = %d -> %s", prefix, len(all_seen_keys), all_seen_keys)
     logger.info("Total counted (post-filkter) = %d", len(parsed_files))
     return parsed_files
 
@@ -587,22 +563,19 @@ def _dedup_latest_versions(parsed_files: list[dict]) -> tuple[list[dict], list[d
         for stale in entries_sorted[1:]:
             logger.info(
                 "Superseded by newer version, skipping %s (kept %s)",
-                stale["file_key"],
-                latest["file_key"],
+                stale["file_key"], latest["file_key"],
             )
 
         if all(e["version"] is None for e in entries):
-            discrepancies.append(
-                {
-                    "filename": latest["file_key"],
-                    "party_id": party_id,
-                    "issue": (
-                        f"{len(entries)} files share review_id={review_id}, "
-                        f"party_id={party_id}, suffix={base_suffix}, type={file_type} "
-                        "with no version marker to disambiguate; kept one arbitrarily"
-                    ),
-                }
-            )
+            discrepancies.append({
+                "filename": latest["file_key"],
+                "party_id": party_id,
+                "issue": (
+                    f"{len(entries)} files share review_id={review_id}, "
+                    f"party_id={party_id}, suffix={base_suffix}, type={file_type} "
+                    "with no version marker to disambiguate; kept one arbitrarily"
+                ),
+            })
 
     return deduped, discrepancies
 
@@ -610,9 +583,7 @@ def _dedup_latest_versions(parsed_files: list[dict]) -> tuple[list[dict], list[d
 # ---------------------------------------------------------------------------
 # Validation against the control file's declared summary
 # ---------------------------------------------------------------------------
-def _validate_batch(
-    control_data: dict, actual_files: list[dict], control_filename: str
-) -> list[dict]:
+def _validate_batch(control_data: dict, actual_files: list[dict], control_filename: str) -> list[dict]:
     """Compare control_data.summary against what's actually in incoming/.
     actual_files should be the RAW (pre-dedup) list, since the control file's
     counts include every format/version variant as a separate file entry."""
@@ -629,42 +600,29 @@ def _validate_batch(
     logger.info(
         "declared_total_files=%s declared_total_parties=%s | "
         "actual_total_files=%s actual_total_parties=%s | actual_filenames=%s",
-        declared_total_files,
-        declared_total_parties,
-        actual_total_files,
-        actual_total_parties,
-        sorted(os.path.basename(f["file_key"]) for f in actual_files),
+        declared_total_files, declared_total_parties,
+        actual_total_files, actual_total_parties, sorted(os.path.basename(f["file_key"])for f in actual_files)
     )
 
-    if (
-        declared_total_files is not None
-        and int(declared_total_files) != actual_total_files
-    ):
-        discrepancies.append(
-            {
-                "filename": control_filename,
-                "party_id": None,
-                "issue": (
-                    f"summary.total_file_count={declared_total_files} but "
-                    f"{actual_total_files} file(s) found in incoming/"
-                ),
-            }
-        )
+    if declared_total_files is not None and int(declared_total_files) != actual_total_files:
+        discrepancies.append({
+            "filename": control_filename,
+            "party_id": None,
+            "issue": (
+                f"summary.total_file_count={declared_total_files} but "
+                f"{actual_total_files} file(s) found in incoming/"
+            ),
+        })
 
-    if (
-        declared_total_parties is not None
-        and int(declared_total_parties) != actual_total_parties
-    ):
-        discrepancies.append(
-            {
-                "filename": control_filename,
-                "party_id": None,
-                "issue": (
-                    f"summary.total_party_count={declared_total_parties} but "
-                    f"{actual_total_parties} distinct party_id(s) found in incoming/"
-                ),
-            }
-        )
+    if declared_total_parties is not None and int(declared_total_parties) != actual_total_parties:
+        discrepancies.append({
+            "filename": control_filename,
+            "party_id": None,
+            "issue": (
+                f"summary.total_party_count={declared_total_parties} but "
+                f"{actual_total_parties} distinct party_id(s) found in incoming/"
+            ),
+        })
 
     return discrepancies
 
@@ -692,13 +650,11 @@ def _find_latest_batch_identifier(bucket: str) -> str:
     latest: Optional[str] = None
 
     paginator = s3_client.get_paginator("list_objects_v2")
-    for page in paginator.paginate(
-        Bucket=bucket, Prefix=INCOMING_PREFIX, Delimiter="/"
-    ):
+    for page in paginator.paginate(Bucket=bucket, Prefix=INCOMING_PREFIX, Delimiter="/"):
         for common_prefix in page.get("CommonPrefixes", []):
             folder_name = common_prefix.get("Prefix", "").rstrip("/")
             if folder_name.startswith(INCOMING_PREFIX):
-                folder_name = folder_name[len(INCOMING_PREFIX) :]
+                folder_name = folder_name[len(INCOMING_PREFIX):]
             match = BATCH_FOLDER_RE.match(folder_name)
             if not match:
                 continue
@@ -710,7 +666,7 @@ def _find_latest_batch_identifier(bucket: str) -> str:
         raise BatchFolderNotFoundError(
             "No batch folder found in the bucket - expected the upstream "
             "CSV-ingestion Lambda to have created one before this lambda runs"
-        )
+        )  
 
     logger.info("Found latest batch folder: %s", latest)
     return latest
@@ -719,9 +675,7 @@ def _find_latest_batch_identifier(bucket: str) -> str:
 # ---------------------------------------------------------------------------
 # S3 move (copy + delete) into the batch folder, suffixing filename
 # ---------------------------------------------------------------------------
-def _move_to_batch_folder(
-    bucket: str, src_key: str, batch_identifier: str, prefix: str = INCOMING_PREFIX
-) -> str:
+def _move_to_batch_folder(bucket: str, src_key: str, batch_identifier: str, prefix: str = INCOMING_PREFIX) -> str:
     """Copy src_key into <batch_identifier>/ with the batch_identifier appended
     before the extension, then delete the original. Returns the new key."""
     file_name = os.path.basename(src_key)
@@ -729,9 +683,7 @@ def _move_to_batch_folder(
     new_file_name = f"{name}_{batch_identifier}{ext}"
     dest_key = f"{prefix}{batch_identifier}/{new_file_name}"
 
-    s3_client.copy_object(
-        Bucket=bucket, CopySource={"Bucket": bucket, "Key": src_key}, Key=dest_key
-    )
+    s3_client.copy_object(Bucket=bucket, CopySource={"Bucket": bucket, "Key": src_key}, Key=dest_key)
     s3_client.delete_object(Bucket=bucket, Key=src_key)
 
     logger.info("Moved %s -> %s", src_key, dest_key)
@@ -751,17 +703,13 @@ def _process_single_file(bucket: str, file_key: str, parsed: dict) -> dict:
     if not document_type:
         logger.warning(
             "Could not resolve suffix '%s' to a known document type for %s",
-            parsed["base_suffix"],
-            file_key,
+            parsed["base_suffix"], file_key,
         )
         return {"key": file_key, "status": "skipped", "reason": "unknown suffix"}
 
     logger.info(
         "Processing party_id=%s review_id=%s document_type=%s (%s)",
-        party_id,
-        review_id,
-        document_type,
-        file_key,
+        party_id, review_id, document_type, file_key,
     )
 
     try:
@@ -771,61 +719,31 @@ def _process_single_file(bucket: str, file_key: str, parsed: dict) -> dict:
         if not content:
             logger.warning("No text extracted from %s", file_key)
             _save_result(
-                party_id,
-                review_id,
-                document_type,
-                raw_suffix,
-                file_key,
-                file_type,
-                content="",
-                avg_confidence=None,
-                status="failed",
+                party_id, review_id, document_type, raw_suffix, file_key, file_type,
+                content="", avg_confidence=None, status="failed",
                 error_message="No text extracted",
             )
             return {"key": file_key, "status": "failed", "reason": "no text extracted"}
 
         _save_result(
-            party_id,
-            review_id,
-            document_type,
-            raw_suffix,
-            file_key,
-            file_type,
-            content=content,
-            avg_confidence=avg_confidence,
-            status="completed",
+            party_id, review_id, document_type, raw_suffix, file_key, file_type,
+            content=content, avg_confidence=avg_confidence, status="completed",
         )
         return {"key": file_key, "status": "completed", "document_type": document_type}
 
     except (ClientError, BotoCoreError) as exc:
         logger.exception("AWS error processing %s", file_key)
         _save_result(
-            party_id,
-            review_id,
-            document_type,
-            raw_suffix,
-            file_key,
-            file_type,
-            content="",
-            avg_confidence=None,
-            status="failed",
-            error_message=str(exc),
+            party_id, review_id, document_type, raw_suffix, file_key, file_type,
+            content="", avg_confidence=None, status="failed", error_message=str(exc),
         )
         return {"key": file_key, "status": "failed", "reason": str(exc)}
 
     except Exception as exc:  # pylint: disable=broad-exception-caught
         logger.exception("Unexpected error processing %s", file_key)
         _save_result(
-            party_id,
-            review_id,
-            document_type,
-            raw_suffix,
-            file_key,
-            file_type,
-            content="",
-            avg_confidence=None,
-            status="failed",
-            error_message=str(exc),
+            party_id, review_id, document_type, raw_suffix, file_key, file_type,
+            content="", avg_confidence=None, status="failed", error_message=str(exc),
         )
         return {"key": file_key, "status": "failed", "reason": str(exc)}
 
@@ -833,9 +751,7 @@ def _process_single_file(bucket: str, file_key: str, parsed: dict) -> dict:
 # ---------------------------------------------------------------------------
 # Batch processing - triggered once by any incoming/*.json (batch_complete=true)
 # ---------------------------------------------------------------------------
-def _process_batch(
-    bucket: str, prefix: str, control_data: dict, control_key: str
-) -> list[dict]:
+def _process_batch(bucket: str, prefix: str, control_data: dict, control_key: str) -> list[dict]:
     logger.info("raw control_data = %s", json.dumps(control_data))
     print("Ensuring discrepancies table")
     _ensure_discrepancies_table()
@@ -850,9 +766,7 @@ def _process_batch(
 
     print("Validate discrepancies")
     control_filename = os.path.basename(control_key)
-    validation_discrepancies = _validate_batch(
-        control_data, raw_files, control_filename
-    )
+    validation_discrepancies = _validate_batch(control_data, raw_files, control_filename)
 
     all_discrepancies = validation_discrepancies + dedup_discrepancies
     print("Log discrepancies")
@@ -864,18 +778,14 @@ def _process_batch(
     results = []
     print("Processing files")
     for parsed in deduped_files:
-        moved_key = _move_to_batch_folder(
-            bucket, parsed["file_key"], batch_identifier, prefix
-        )
+        moved_key = _move_to_batch_folder(bucket, parsed["file_key"], batch_identifier, prefix)
         results.append(_process_single_file(bucket, moved_key, parsed))
 
     # Relocate the control file itself too, for audit trail.
     try:
         _move_to_batch_folder(bucket, control_key, batch_identifier)
     except (ClientError, BotoCoreError):
-        logger.exception(
-            "Failed to relocate control file %s into batch folder", control_key
-        )
+        logger.exception("Failed to relocate control file %s into batch folder", control_key)
 
     return results
 
@@ -902,7 +812,7 @@ def lambda_handler(event, context):  # noqa: ARG001  pylint: disable=unused-argu
 
         # Only top-level incoming/*.json (not files already inside a batch
         # folder) are treated as control-file triggers.
-        relative_key = key[len(INCOMING_PREFIX) :]
+        relative_key = key[len(INCOMING_PREFIX):]
         file_name = os.path.basename(key)
 
         if "/" in relative_key or not file_name.lower().endswith(".json"):
@@ -929,9 +839,7 @@ def lambda_handler(event, context):  # noqa: ARG001  pylint: disable=unused-argu
             )
             continue
 
-        logger.info(
-            "%s detected with batch_complete=true - validating and ingesting batch", key
-        )
+        logger.info("%s detected with batch_complete=true - validating and ingesting batch", key)
         print("3. Processing batch...")
         results.extend(_process_batch(bucket, INCOMING_PREFIX, control_data, key))
         print("4. Batch processed.")
