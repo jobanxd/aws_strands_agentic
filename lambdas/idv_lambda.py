@@ -16,15 +16,17 @@ Trigger:
         - batch_complete == true  -> validate + process
 
 Filename convention expected under incoming/:
-    <review_id>_<party_id>_<suffix>[_<version 3-digit>].<file_type>
+    <review_id>_<party_id>_<suffix>_<NN>.<file_type>
 
     NOTE: this is the OPPOSITE field order from the previous convention
     (<party_id>_<review_id>_<suffix>). Confirmed with source system.
 
-    If the same (review_id, party_id, suffix, file_type) combination shows
-    up more than once distinguished only by a trailing 3-digit version
-    (..._001.jpg, ..._002.jpg), only the highest version is processed -
-    it's treated as a re-upload/correction of the same document.
+    The trailing 2-digit number (_01, _02, _03, ...) is NOT a re-upload
+    version - it's just a sequential index assigned by the uploading team
+    across a party's documents (e.g. passport is always _01, proof of
+    address is always _02). The uploading team already guarantees exactly
+    one file per document type per party/review, so this Lambda does no
+    deduplication - every file under incoming/ is processed as-is.
 
 .json (other than the control file) and .csv are ignored on purpose -
 those are handled by separate lambdas. Anything else that isn't
@@ -310,17 +312,33 @@ def _resolve_document_type(raw_suffix: str) -> Optional[str]:
 
 
 # ---------------------------------------------------------------------------
-# Filename parsing:  <review_id>_<party_id>_<suffix>[_<version>].<file_type>
+# Filename parsing:  <review_id>_<party_id>_<suffix>.<file_type>
 #
 # NOTE: review_id and party_id are FLIPPED relative to the old convention.
-# review_id / party_id are assumed to contain no underscores; suffix may.
-# A trailing 3-digit version marker (_001, _002, ...) on the suffix means
-# this file is a re-upload of the same document; only the highest version
-# for a given (review_id, party_id, base_suffix, file_type) is kept.
+# review_id / party_id are assumed to contain no underscores; suffix may
+# (and normally does, e.g. "PASSPORT_01") - the trailing number is just a
+# sequential index, not a version, so it's kept as part of the suffix and
+# not parsed out separately. See module docstring.
 # ---------------------------------------------------------------------------
 # FILENAME_RE = re.compile(r"^(?P<review_id>[^_]+)_(?P<party_id>[^_]+)_(?P<suffix>.+)$")
 FILENAME_RE = re.compile(r"^(?P<party_id>[^_]+)_(?P<review_id>[^_]+)_(?P<suffix>.+)$")
-VERSION_RE = re.compile(r"^(?P<base_suffix>.+)_(?P<version>\d{3})$")
+
+# The suffix itself is <documenttype>_<NN>, e.g. "PASSPORT_01" or
+# "PROOF_OF_ADDRESS_02". This strips the trailing 2-digit sequence index so
+# we can look the document type up in the Textract mapping directly, rather
+# than relying on substring matching against the full "documenttype_01"
+# string.
+SEQUENCE_INDEX_RE = re.compile(r"^(?P<doc_type_suffix>.+)_(?P<index>\d{2})$")
+
+
+def _strip_sequence_index(raw_suffix: str) -> str:
+    """Strip a trailing _NN sequence index off a suffix, e.g. "PASSPORT_01"
+    -> "PASSPORT". If the suffix doesn't end in _NN, it's returned unchanged
+    (falls through to the substring match in _resolve_document_type)."""
+    match = SEQUENCE_INDEX_RE.match(raw_suffix)
+    if match:
+        return match.group("doc_type_suffix")
+    return raw_suffix
 
 
 def _parse_filename(file_name: str) -> Optional[dict]:
@@ -338,19 +356,10 @@ def _parse_filename(file_name: str) -> Optional[dict]:
     party_id = match.group("party_id")
     suffix = match.group("suffix")
 
-    base_suffix = suffix
-    version: Optional[int] = None
-    version_match = VERSION_RE.match(suffix)
-    if version_match:
-        base_suffix = version_match.group("base_suffix")
-        version = int(version_match.group("version"))
-
     return {
         "review_id": review_id,
         "party_id": party_id,
         "suffix": suffix,
-        "base_suffix": base_suffix,
-        "version": version,
         "file_type": ext.lstrip("."),
     }
 
@@ -480,13 +489,11 @@ def _load_control_file(bucket: str, key: str) -> Optional[dict]:
 # ---------------------------------------------------------------------------
 # Batch listing - raw objects currently sitting under incoming/
 # ---------------------------------------------------------------------------
-BATCH_FOLDER_PATTERN = re.compile(r"^BATCH_\d{8}_\d{3}/")
-
 def _list_incoming_files(bucket: str, prefix: str, control_key: str) -> list[dict]:
     """List every ingestible document under incoming/, skipping the control
     file itself and any ignored/unsupported/unparseable files. Each entry is
-    the parsed filename dict (review_id/party_id/suffix/base_suffix/version/
-    file_type) plus its S3 key under "file_key"."""
+    the parsed filename dict (review_id/party_id/suffix/file_type) plus its
+    S3 key under "file_key"."""
     parsed_files: list[dict] = []
     paginator = s3_client.get_paginator("list_objects_v2")
 
@@ -498,7 +505,7 @@ def _list_incoming_files(bucket: str, prefix: str, control_key: str) -> list[dic
             all_seen_keys.append(key)
             relative_key = key[len(prefix):]
 
-            if BATCH_FOLDER_PATTERN.match(relative_key):
+            if "/" in relative_key:
                 continue
 
             if key == control_key:
@@ -527,57 +534,6 @@ def _list_incoming_files(bucket: str, prefix: str, control_key: str) -> list[dic
     logger.info("Total raw objects under %s = %d -> %s", prefix, len(all_seen_keys), all_seen_keys)
     logger.info("Total counted (post-filkter) = %d", len(parsed_files))
     return parsed_files
-
-
-# ---------------------------------------------------------------------------
-# Version de-duplication: keep only the latest version of each logical file
-# ---------------------------------------------------------------------------
-def _dedup_latest_versions(parsed_files: list[dict]) -> tuple[list[dict], list[dict]]:
-    """Group by (review_id, party_id, base_suffix, file_type); if a group has
-    more than one entry, keep only the highest-versioned one (missing version
-    is treated as lower than any numbered version). Returns (files_to_process,
-    discrepancies) - a discrepancy is logged when a group has 2+ entries that
-    ALL lack a version marker, since that's an unexplained true duplicate
-    rather than a normal re-upload."""
-    groups: dict[tuple, list[dict]] = {}
-    for pf in parsed_files:
-        key = (pf["review_id"], pf["party_id"], pf["base_suffix"], pf["file_type"])
-        groups.setdefault(key, []).append(pf)
-
-    deduped: list[dict] = []
-    discrepancies: list[dict] = []
-
-    for (review_id, party_id, base_suffix, file_type), entries in groups.items():
-        if len(entries) == 1:
-            deduped.append(entries[0])
-            continue
-
-        entries_sorted = sorted(
-            entries,
-            key=lambda e: e["version"] if e["version"] is not None else -1,
-            reverse=True,
-        )
-        latest = entries_sorted[0]
-        deduped.append(latest)
-
-        for stale in entries_sorted[1:]:
-            logger.info(
-                "Superseded by newer version, skipping %s (kept %s)",
-                stale["file_key"], latest["file_key"],
-            )
-
-        if all(e["version"] is None for e in entries):
-            discrepancies.append({
-                "filename": latest["file_key"],
-                "party_id": party_id,
-                "issue": (
-                    f"{len(entries)} files share review_id={review_id}, "
-                    f"party_id={party_id}, suffix={base_suffix}, type={file_type} "
-                    "with no version marker to disambiguate; kept one arbitrarily"
-                ),
-            })
-
-    return deduped, discrepancies
 
 
 # ---------------------------------------------------------------------------
@@ -699,11 +655,12 @@ def _process_single_file(bucket: str, file_key: str, parsed: dict) -> dict:
     raw_suffix = parsed["suffix"]
     file_type = parsed["file_type"]
 
-    document_type = _resolve_document_type(parsed["base_suffix"])
+    doc_type_suffix = _strip_sequence_index(raw_suffix)
+    document_type = _resolve_document_type(doc_type_suffix)
     if not document_type:
         logger.warning(
-            "Could not resolve suffix '%s' to a known document type for %s",
-            parsed["base_suffix"], file_key,
+            "Could not resolve suffix '%s' (stripped: '%s') to a known document type for %s",
+            raw_suffix, doc_type_suffix, file_key,
         )
         return {"key": file_key, "status": "skipped", "reason": "unknown suffix"}
 
@@ -761,23 +718,20 @@ def _process_batch(bucket: str, prefix: str, control_data: dict, control_key: st
 
     print("Listing incoming files")
     raw_files = _list_incoming_files(bucket, prefix, control_key)
-    print("Dedup")
-    deduped_files, dedup_discrepancies = _dedup_latest_versions(raw_files)
 
     print("Validate discrepancies")
     control_filename = os.path.basename(control_key)
     validation_discrepancies = _validate_batch(control_data, raw_files, control_filename)
 
-    all_discrepancies = validation_discrepancies + dedup_discrepancies
     print("Log discrepancies")
-    _log_discrepancies(batch_identifier, all_discrepancies)
+    _log_discrepancies(batch_identifier, validation_discrepancies)
 
     print("Reset Table")
     _reset_table()
 
     results = []
     print("Processing files")
-    for parsed in deduped_files:
+    for parsed in raw_files:
         moved_key = _move_to_batch_folder(bucket, parsed["file_key"], batch_identifier, prefix)
         results.append(_process_single_file(bucket, moved_key, parsed))
 
