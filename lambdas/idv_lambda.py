@@ -738,7 +738,7 @@ def _process_single_file(bucket: str, file_key: str, parsed: dict) -> dict:
 # AgentCore invocation - folded in from the old standalone EventBridge
 # lambda. Fired once, after the whole batch has finished ingesting.
 # ---------------------------------------------------------------------------
-def _build_agentcore_payload() -> dict:
+def _build_agentcore_payload(batch_identifier: str) -> dict:
     """Build the payload for the ODD AgentCore runtime.
 
     If PARTY_ID_OVERRIDE has entries, only those party_ids are sent, e.g.
@@ -747,9 +747,10 @@ def _build_agentcore_payload() -> dict:
     currently in RDS", which right after this batch loads means the whole
     batch that was just ingested.
     """
+    payload = {"batch_id": batch_identifier}
     if PARTY_ID_OVERRIDE:
-        return {"party_ids": list(PARTY_ID_OVERRIDE)}
-    return {}
+        payload["party_ids"] = list(PARTY_ID_OVERRIDE)
+    return payload
 
 
 def _read_agentcore_response_body(response: dict) -> bytes:
@@ -761,11 +762,11 @@ def _read_agentcore_response_body(response: dict) -> bytes:
     return b"".join(body)
 
 
-def _invoke_agentcore_runtime() -> dict:
+def _invoke_agentcore_runtime(batch_identifier: str) -> dict:
     """Invoke the ODD AgentCore runtime now that ingestion for this batch has
     finished. Mirrors the logic that used to live in the standalone
     EventBridge-triggered lambda."""
-    runtime_payload = _build_agentcore_payload()
+    runtime_payload = _build_agentcore_payload(batch_identifier)
     session_id = f"idv-ingest-{uuid.uuid4()}"
 
     logger.info(
@@ -852,7 +853,7 @@ def _process_batch(bucket: str, prefix: str, control_data: dict, control_key: st
     # completed successfully.
     print("Invoking AgentCore runtime")
     try:
-        agentcore_result = _invoke_agentcore_runtime()
+        agentcore_result = _invoke_agentcore_runtime(batch_identifier)
     except Exception as exc:  # pylint: disable=broad-exception-caught
         logger.exception("Failed to invoke ODD AgentCore runtime for batch %s", batch_identifier)
         agentcore_result = {"status": "failed", "reason": str(exc)}
