@@ -8,6 +8,10 @@ Postgres under `textract_extracted_documents`.
 This lets the actual KYC/ODD agent pipeline read pre-extracted text from
 RDS instead of calling Textract at process time.
 
+Once the whole batch has finished ingesting, this Lambda also kicks off the
+ODD AgentCore runtime directly (folded in from what used to be a separate
+EventBridge-triggered Lambda) - see "AgentCore invocation" section below.
+
 Trigger:
     Any .json file landing under incoming/ (top level, not inside an
     existing batch folder) is treated as the control file trigger. Its
@@ -53,8 +57,26 @@ Batch folder:
         incoming/53446_43542_Proof_of_ID.jpg
           -> BATCH_20260706_001/53446_43542_Proof_of_ID_BATCH_20260706_001.jpg
 
+AgentCore invocation:
+    After every file in the batch has been processed (and the control file
+    relocated for audit trail), this Lambda invokes the ODD AgentCore
+    runtime directly - there is no longer a separate EventBridge-triggered
+    Lambda for this.
+
+    PARTY_ID_OVERRIDE below controls what gets sent as the AgentCore
+    payload:
+        - PARTY_ID_OVERRIDE = ["1234", "5678"]
+              -> payload sent is {"party_ids": ["1234", "5678"]}
+        - PARTY_ID_OVERRIDE = []  (default)
+              -> payload sent is {} (empty braces). The ODD AgentCore
+                 runtime treats an empty payload as "process everything
+                 currently sitting in RDS", which after this batch's
+                 ingestion means the whole freshly-loaded batch.
+
 Requires a Lambda layer providing PyMuPDF (fitz), openpyxl, and psycopg2
-(binary) - none of these ship in the base runtime.
+(binary) - none of these ship in the base runtime. Also requires the
+AGENT_RUNTIME_ARN environment variable and bedrock-agentcore:InvokeAgentRuntime
+IAM permission for the AgentCore invocation step.
 """
 
 import json
@@ -62,8 +84,9 @@ import logging
 import os
 import re
 import urllib.parse
+import uuid
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Any, Optional
 
 import boto3
 import fitz  # PyMuPDF
@@ -71,6 +94,7 @@ import openpyxl
 import psycopg2
 from botocore.config import Config
 from botocore.exceptions import BotoCoreError, ClientError
+from rds_iam_auth import get_iam_connection
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -104,30 +128,35 @@ textract_client = boto3.client("textract")
 # on every S3 event.
 _variant_map_cache: Optional[dict[str, str]] = None
 
+# ---------------------------------------------------------------------------
+# AgentCore config (folded in from the standalone EventBridge-triggered
+# lambda - this Lambda now kicks off the ODD runtime itself once ingestion
+# for the batch is done).
+# ---------------------------------------------------------------------------
+AGENT_RUNTIME_ARN = os.environ["AGENT_RUNTIME_ARN"]
+AGENT_RUNTIME_QUALIFIER = os.getenv("AGENT_RUNTIME_QUALIFIER", "DEFAULT")
+AGENTCORE_CONNECT_TIMEOUT_SECONDS = int(os.getenv("AGENTCORE_CONNECT_TIMEOUT_SECONDS", "10"))
+AGENTCORE_READ_TIMEOUT_SECONDS = int(os.getenv("AGENTCORE_READ_TIMEOUT_SECONDS", "840"))
 
-class SecretFetchError(Exception):
-    """Raised when the RDS connection cannot be established."""
+# If populated, only these party_ids are sent to the ODD AgentCore runtime,
+# e.g. ["43542", "98211"] -> payload {"party_ids": ["43542", "98211"]}.
+# Leave empty (default) to send {} - the AgentCore runtime then processes
+# every party currently sitting in RDS.
+PARTY_ID_OVERRIDE: list[str] = []
+
+agentcore_client = boto3.client(
+    "bedrock-agentcore",
+    config=Config(
+        connect_timeout=AGENTCORE_CONNECT_TIMEOUT_SECONDS,
+        read_timeout=AGENTCORE_READ_TIMEOUT_SECONDS,
+        retries={"max_attempts": 2, "mode": "standard"},
+    ),
+)
 
 
 def get_connection(connect_timeout: int = 10):
-    """
-    Build and return a fresh psycopg2 connection using credentials from
-    Secrets Manager.
-    Caller is responsible for closing the connection (use try/finally or
-    a context manager at the call site).
-    """
-    try:
-        conn = psycopg2.connect(
-            host ='r-dcoe-aikycdev-rds-postgresql-tf-dev-cluster.cluster-ct4o4gwekssh.eu-west-1.rds.amazonaws.com',
-            port=5432,
-            dbname='aikyc',
-            user='aikyc',
-            password='XZulm&yh(DY>9Kg+',
-            sslmode='require',
-        )
-    except Exception as exc:  # noqa: BLE001
-        raise SecretFetchError(f"Failed to connect to RDS: {exc}") from exc
-    return conn
+    """Return a fresh IAM-authenticated Aurora PostgreSQL connection."""
+    return get_iam_connection(connect_timeout)
 
 
 # ---------------------------------------------------------------------------
@@ -706,6 +735,82 @@ def _process_single_file(bucket: str, file_key: str, parsed: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# AgentCore invocation - folded in from the old standalone EventBridge
+# lambda. Fired once, after the whole batch has finished ingesting.
+# ---------------------------------------------------------------------------
+def _build_agentcore_payload() -> dict:
+    """Build the payload for the ODD AgentCore runtime.
+
+    If PARTY_ID_OVERRIDE has entries, only those party_ids are sent, e.g.
+    {"party_ids": ["43542", "98211"]}. Otherwise an empty payload ({}) is
+    sent - the AgentCore runtime treats that as "process everything
+    currently in RDS", which right after this batch loads means the whole
+    batch that was just ingested.
+    """
+    if PARTY_ID_OVERRIDE:
+        return {"party_ids": list(PARTY_ID_OVERRIDE)}
+    return {}
+
+
+def _read_agentcore_response_body(response: dict) -> bytes:
+    body = response.get("response")
+    if body is None:
+        return b""
+    if hasattr(body, "read"):
+        return body.read()
+    return b"".join(body)
+
+
+def _invoke_agentcore_runtime() -> dict:
+    """Invoke the ODD AgentCore runtime now that ingestion for this batch has
+    finished. Mirrors the logic that used to live in the standalone
+    EventBridge-triggered lambda."""
+    runtime_payload = _build_agentcore_payload()
+    session_id = f"idv-ingest-{uuid.uuid4()}"
+
+    logger.info(
+        "Invoking ODD AgentCore runtime after batch ingestion: session_id=%s payload=%s",
+        session_id, runtime_payload,
+    )
+
+    response = agentcore_client.invoke_agent_runtime(
+        agentRuntimeArn=AGENT_RUNTIME_ARN,
+        qualifier=AGENT_RUNTIME_QUALIFIER,
+        runtimeSessionId=session_id,
+        contentType="application/json",
+        accept="application/json",
+        payload=json.dumps(runtime_payload).encode("utf-8"),
+    )
+
+    status_code = response.get("statusCode", 0)
+    raw_body = _read_agentcore_response_body(response)
+    response_text = raw_body.decode("utf-8") if raw_body else ""
+
+    if status_code < 200 or status_code >= 300:
+        raise RuntimeError(
+            f"AgentCore invocation failed with HTTP {status_code}: {response_text}"
+        )
+
+    try:
+        runtime_result: Any = json.loads(response_text) if response_text else None
+    except json.JSONDecodeError:
+        runtime_result = response_text
+
+    logger.info(
+        "ODD AgentCore runtime invocation completed: session_id=%s status_code=%s",
+        session_id, status_code,
+    )
+
+    return {
+        "status": "invoked",
+        "status_code": status_code,
+        "runtime_session_id": response.get("runtimeSessionId", session_id),
+        "input": runtime_payload,
+        "result": runtime_result,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Batch processing - triggered once by any incoming/*.json (batch_complete=true)
 # ---------------------------------------------------------------------------
 def _process_batch(bucket: str, prefix: str, control_data: dict, control_key: str) -> list[dict]:
@@ -740,6 +845,19 @@ def _process_batch(bucket: str, prefix: str, control_data: dict, control_key: st
         _move_to_batch_folder(bucket, control_key, batch_identifier)
     except (ClientError, BotoCoreError):
         logger.exception("Failed to relocate control file %s into batch folder", control_key)
+
+    # Batch ingestion is done - kick off the ODD AgentCore runtime. A
+    # failure here is logged and reported back in the results, but does not
+    # raise, since the ingestion itself (the point of this lambda) already
+    # completed successfully.
+    print("Invoking AgentCore runtime")
+    try:
+        agentcore_result = _invoke_agentcore_runtime()
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        logger.exception("Failed to invoke ODD AgentCore runtime for batch %s", batch_identifier)
+        agentcore_result = {"status": "failed", "reason": str(exc)}
+
+    results.append({"agentcore_invocation": agentcore_result})
 
     return results
 
